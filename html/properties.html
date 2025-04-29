@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>All Properties - Property Renting Website</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="../img/logo.png" alt="Logo" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="properties.html">Properties</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+
+    <section class="properties">
+        <div class="container">
+            <h1>All Properties</h1>
+            <div class="property-list" id="property-list">
+                <!-- JavaScript will dynamically load properties -->
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Your Website | All Rights Reserved</p>
+            <div class="social-links">
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        fetch('../php/fetch-properties.php')
+            .then(response => response.json())
+            .then(data => {
+                const propertyList = document.getElementById('property-list');
+                data.forEach(property => {
+                    const propertyCard = document.createElement('div');
+                    propertyCard.classList.add('property-card');
+                    propertyCard.innerHTML = `
+                        <img src="${property.image_url}" alt="${property.title}">
+                        <h3>${property.title}</h3>
+                        <p>$${property.price}/month</p>
+                        <a href="property.html?id=${property.id}">View Details</a>
+                    `;
+                    propertyList.appendChild(propertyCard);
+                });
+            })
+            .catch(error => console.log('Error fetching properties:', error));
+    </script>
+</body>
+</html>

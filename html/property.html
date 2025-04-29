@@ -1,0 +1,64 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Property Details - Property Renting Website</title>
+    <link rel="stylesheet" href="../css/styles.css">
+</head>
+<body>
+    <header>
+        <div class="container">
+            <div class="logo">
+                <img src="../img/logo.png" alt="Logo" class="logo-img">
+            </div>
+            <nav>
+                <ul>
+                    <li><a href="index.html">Home</a></li>
+                    <li><a href="about.html">About</a></li>
+                    <li><a href="properties.html">Properties</a></li>
+                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="profile.html">Profile</a></li>
+                </ul>
+            </nav>
+        </div>
+    </header>
+
+
+    <section class="property-details">
+        <div class="container" id="property-details">
+            <!-- JavaScript will populate this with property data -->
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2025 Your Website | All Rights Reserved</p>
+            <div class="social-links">
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+            </div>
+        </div>
+    </footer>
+
+    <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const propertyId = urlParams.get('id');
+
+        fetch(`../php/get-property.php?id=${propertyId}`)
+            .then(response => response.json())
+            .then(property => {
+                const container = document.getElementById('property-details');
+                container.innerHTML = `
+                    <h1>${property.title}</h1>
+                    <img src="${property.image_url}" alt="${property.title}">
+                    <p><strong>Price:</strong> $${property.price}/month</p>
+                    <p><strong>Description:</strong> ${property.description}</p>
+                    <p><strong>Location:</strong> ${property.location}</p>
+                `;
+            })
+            .catch(error => console.log('Error loading property:', error));
+    </script>
+</body>
+</html>
