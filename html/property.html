@@ -15,9 +15,8 @@
             <nav>
                 <ul>
                     <li><a href="index.html">Home</a></li>
-                    <li><a href="about.html">About</a></li>
                     <li><a href="properties.html">Properties</a></li>
-                    <li><a href="contact.html">Contact</a></li>
+                    <li><a href="viewing.html">Viewing</li>
                     <li><a href="profile.html">Profile</a></li>
                 </ul>
             </nav>
@@ -27,7 +26,29 @@
 
     <section class="property-details">
         <div class="container" id="property-details">
-            <!-- JavaScript will populate this with property data -->
+            <div class="property-layout"></div>
+                <div class="property-gallery" style="width: 66.66%; float: left;">
+                    <div class="large-photo">
+                        <img id="highlighted-photo" src="" alt="Highlighted Property Photo">
+                    </div>
+                    <div class="photo-thumbnails">
+                        <!-- Thumbnails will be populated by JavaScript -->
+                    </div>
+                </div>
+                <div class="property-info" style="width: 33.33%; float: left; padding-left: 20px;">
+                    <h1 id="property-title">Property Title</h1>
+                    <p><strong>Price            :</strong> <span id="property-price">$0/month</span></p>
+                    <p><strong>Number of Rooms  :</strong> <span id="property-rooms">Rooms goes here.</span></p>
+                    <p><strong>Location         :</strong> <span id="property-location">Location goes here.</span></p>
+
+                    <div class="property-actions">
+                        <button id="negotiate-button">Negotiate</button>
+                        <button id="viewing-button">Schedule Viewing</button>
+                        <button id="rent-button">Rent This Property</button>
+                    </div>
+                </div>
+                <div style="clear: both;"></div>
+            </div>
         </div>
     </section>
 
