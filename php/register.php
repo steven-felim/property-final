@@ -2,7 +2,8 @@
 // Check if the form is submitted
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get the form inputs
-    $username = $_POST['username'];
+    $firstName = $_POST['firstname'];
+    $lastName = $_POST['lastname'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $role = $_POST['role'];
@@ -22,11 +23,17 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($conn->connect_error) {
         die("Connection failed: " . $conn->connect_error);
     }
-
+    
     // Insert data into the database
-    $sql = "INSERT INTO users (username, email, password, role) VALUES (?, ?, ?, ?)";
+    if ($role === "client") {
+        $sql = "INSERT INTO CCient (fname, lname, email, password) VALUES (?, ?, ?, ?)";
+    } elseif ($role === "property_owner") {
+        $sql = "INSERT INTO PropertyOwner (fname, lname, email, password) VALUES (?, ?, ?, ?)";
+    } else {
+        die("Invalid role specified.");
+    }
     $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ssss", $username, $email, $hashedPassword, $role);
+    $stmt->bind_param("ssss", $firstname, $lastName, $email, $hashedPassword);
 
     if ($stmt->execute()) {
         echo "Registration successful!";
