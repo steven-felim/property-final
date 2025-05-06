@@ -20,8 +20,14 @@ body {
 
 /* Header */
 header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
     background-color: #fff;
     padding: 20px 0;
+    z-index: 1000;
+    box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
 header .container {
@@ -279,4 +285,63 @@ button:hover {
 .profile ul li {
     margin: 8px 0;
     color: #333;
+}
+
+/* Property Details Section */
+.property-details {
+    padding: 60px 20px;
+    background-color: #f9f9f9;
+}
+
+.property-gallery {
+    margin-bottom: 20px;
+}
+
+.property-gallery .large-photo img {
+    width: 100%;
+    height: auto;
+    border-radius: 8px;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+}
+
+.property-gallery .photo-thumbnails {
+    display: flex;
+    gap: 10px;
+    margin-top: 10px;
+}
+
+.property-gallery .photo-thumbnails img {
+    width: 80px;
+    height: 80px;
+    object-fit: cover;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+
+.property-gallery .photo-thumbnails img:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+.property-info h1 {
+    font-size: 28px;
+    margin-bottom: 15px;
+    color: #333;
+}
+
+.property-info p {
+    font-size: 16px;
+    margin: 10px 0;
+    color: #555;
+}
+
+.property-actions button {
+    border: none;
+    width: 100%;
+    padding: 10px;
+    border-radius: 4px;
+    font-size: 16px;
+    cursor: pointer;
+    transition: background-color 0.3s ease;
 }
