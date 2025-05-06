@@ -74,7 +74,7 @@ header nav ul li a:hover {
     background-image: url('../img/hero.jpg');
     background-size: cover;
     background-position: center;
-    height: 400px;
+    height: 500px;
     display: flex;
     justify-content: center;
     align-items: center;
