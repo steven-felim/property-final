@@ -1,3 +1,15 @@
+<?php
+    session_start();
+
+    if (!isset($_SESSION['user_email'])) {
+        header("Location: index.php");
+        exit();
+    }
+
+    $userEmail = $_SESSION['user_email'];
+    $userRole = $_SESSION['user_role'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -14,10 +26,10 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="properties.html">Properties</a></li>
-                    <li><a href="viewing.html">Viewing</li>
-                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="homepage.php">Home</a></li>
+                    <li><a href="properties.php">Properties</a></li>
+                    <li><a href="viewing.php">Viewing</li>
+                    <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
         </div>

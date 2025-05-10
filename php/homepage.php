@@ -1,12 +1,28 @@
+<?php
+    session_start();
+
+    if (!isset($_SESSION['user_email'])) {
+        header("Location: index.php");
+        exit();
+    }
+
+    $userEmail = $_SESSION['user_email'];
+    $userRole = $_SESSION['user_role'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Properties - Property Renting Website</title>
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Property Renting Website</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
+
 <body>
+    <!-- Header -->
     <header>
         <div class="container">
             <div class="logo">
@@ -14,42 +30,37 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="properties.html">Properties</a></li>
-                    <li><a href="viewing.html">Viewing</li>
-                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="homepage.php">Home</a></li>
+                    <li><a href="properties.php">Properties</a></li>
+                    <li><a href="viewing.php">Viewing</a></li>
+                    <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
+            <div class="user-info">
+                <p>Welcome, <?php echo htmlspecialchars($userEmail); ?> (<?php echo htmlspecialchars($userRole); ?>)</p>
+            </div>
         </div>
     </header>
 
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="hero-content" style="margin-top: 100px;">
+            <h1>Find Your Perfect Home</h1>
+            <p>Your dream property is just a click away.</p>
+        </div>
+    </section>
 
+    <!-- Property Listings -->
     <section class="properties">
-        <div class="container" style="margin-top: 100px;">
-            <h1>All Properties</h1>
-            <div class="property-list" id="property-list">
-                <div class="property-card">
-                    <img src="../img/property1.jpg" alt="Cozy Apartment">
-                    <h3>Cozy Apartment</h3>
-                    <p>$1200/month</p>
-                    <a href="property.html?id=1">View Details</a>
-                </div>
-                <div class="property-card">
-                    <img src="../img/property2.jpg" alt="Modern Condo">
-                    <h3>Modern Condo</h3>
-                    <p>$1500/month</p>
-                    <a href="property.html?id=2">View Details</a>
-                </div>
-                <div class="property-card">
-                    <img src="../img/property3.jpg" alt="Spacious House">
-                    <h3>Spacious House</h3>
-                    <p>$2000/month</p>
-                    <a href="property.html?id=3">View Details</a>
-                </div>
+        <div class="container">
+            <h2>Featured Properties</h2>
+            <div id="property-list" class="property-list" style="margin-bottom: 100px;">
+                <!-- Dynamic property cards will be loaded here -->
             </div>
         </div>
     </section>
 
+    <!-- Footer -->
     <footer>
         <div class="container">
             <p>&copy; 2025 Your Website | All Rights Reserved</p>
@@ -62,6 +73,7 @@
     </footer>
 
     <script>
+        // Fetch the properties data from the PHP script
         fetch('../php/fetch-properties.php')
             .then(response => response.json())
             .then(data => {
@@ -73,12 +85,13 @@
                         <img src="${property.image_url}" alt="${property.title}">
                         <h3>${property.title}</h3>
                         <p>$${property.price}/month</p>
-                        <a href="property.html?id=${property.id}">View Details</a>
+                        <a href="#">View Details</a>
                     `;
                     propertyList.appendChild(propertyCard);
                 });
             })
             .catch(error => console.log('Error fetching properties:', error));
     </script>
+
 </body>
 </html>
