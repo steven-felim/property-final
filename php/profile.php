@@ -8,6 +8,7 @@
 
     $userEmail = $_SESSION['user_email'];
     $userRole = $_SESSION['user_role'];
+    $userName = $_SESSION['user_name'];
 ?>
 
 <!DOCTYPE html>
@@ -39,8 +40,8 @@
     <section class="profile">
         <div class="container">
             <h1>Your Profile</h1>
-            <p><strong>Name:</strong> John Doe</p>
-            <p><strong>Email:</strong> johndoe@example.com</p>
+            <p><strong>Name:</strong> <?php echo $userName; ?></p>
+            <p><strong>Email:</strong> <?php echo $userEmail; ?></p>
             <p><strong>Rented Properties:</strong></p>
             <ul>
                 <li>Luxury Villa - $2,500/month</li>

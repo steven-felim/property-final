@@ -20,7 +20,8 @@ CREATE TABLE Staff (
     PRIMARY KEY (staffNo),
     FOREIGN KEY (branchNo)
         REFERENCES Branch (branchNo)
-        ON UPDATE CASCADE ON DELETE CASCADE
+        ON UPDATE CASCADE ON DELETE CASCADE,
+    CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
 );
  
 CREATE TABLE PrivateOwner (
@@ -31,11 +32,12 @@ CREATE TABLE PrivateOwner (
     street VARCHAR(25) NOT NULL DEFAULT '',
     city VARCHAR(20) NOT NULL DEFAULT '',
     postcode CHAR(7) NOT NULL DEFAULT '',
-    telNo CHAR(14) NOT NULL,
+    telNo VARCHAR(14) NOT NULL,
     eMail VARCHAR(50) NOT NULL,
    PRIMARY KEY (ownerNo),
     INDEX (lName),
-    INDEX (postcode)
+    INDEX (postcode),
+    CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
 );
 
 CREATE TABLE PropertyForRent (
@@ -62,19 +64,30 @@ CREATE TABLE PropertyForRent (
         REFERENCES Branch (branchNo)
         ON UPDATE CASCADE
         ON DELETE CASCADE
-);    
+);   
+
+CREATE TABLE PropertyImage (
+    propertyNo CHAR(4) NOT NULL,
+    image VARCHAR(64) NOT NULL DEFAULT ' ',
+    PRIMARY KEY (propertyNo, image),
+    FOREIGN KEY (propertyNo)
+        REFERENCES PropertyForRent (propertyNo)
+        ON DELETE CASCADE
+        ON UPDATE CASCADE
+);
 
 CREATE TABLE CClient (
     clientNo CHAR(4) NOT NULL,
     fName VARCHAR(50) NOT NULL DEFAULT '',
     lName VARCHAR(50) NOT NULL DEFAULT '',
     password VARCHAR(256) NOT NULL,
-    telNo CHAR(14) NOT NULL,
+    telNo VARCHAR(14) NOT NULL,
     prefType VARCHAR(18) NOT NULL DEFAULT ' ',
     maxRent SMALLINT UNSIGNED,
     eMail VARCHAR(50) NOT NULL,
     PRIMARY KEY (clientNo),
-    INDEX (lName)
+    INDEX (lName),
+    CHECK (email REGEXP '^[A-Za-z0-9._%+-]+@[A-Za-z0-9.-]+\\.[A-Za-z]{2,}$')
 );
  
 CREATE TABLE Viewing (
@@ -87,7 +100,7 @@ CREATE TABLE Viewing (
         REFERENCES CClient (clientNo)
         ON DELETE CASCADE ON UPDATE CASCADE,
     FOREIGN KEY (propertyNo)
-        REFERENCES PropertyforRent (propertyNo)
+        REFERENCES PropertyForRent (propertyNo)
         ON DELETE CASCADE ON UPDATE CASCADE
 );  
  

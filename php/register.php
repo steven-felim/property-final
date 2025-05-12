@@ -3,8 +3,8 @@ session_start();
 
 if ($_SERVER["REQUEST_METHOD"] == "POST") {
     // Get form inputs
-    $firstName = $_POST['firstname'];
-    $lastName = $_POST['lastname'];
+    $firstName = $_POST['fname'];
+    $lastName = $_POST['lname'];
     $email = $_POST['email'];
     $password = $_POST['password'];
     $role = $_POST['role'];
@@ -40,6 +40,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
     if ($stmt->execute()) {
         $_SESSION['user_email'] = $email;
         $_SESSION['user_role'] = $role;
+        $$_SESSION['user_name'] = trim($firstName . " " . $lastName);
         header("Location: homepage.php");
         exit();
     } else {
@@ -59,7 +60,7 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
         <title>Register</title>
         <link rel="stylesheet" href="../css/styles.css">
     </head>
-    <body>
+    <body class="register-page">
         <div class="register-container">
             <h2>Register</h2>
             <?php if (!empty($error)): ?>
@@ -67,12 +68,12 @@ if ($_SERVER["REQUEST_METHOD"] == "POST") {
             <?php endif; ?>
             <form action="" method="POST">
                 <div class="form-group">
-                    <label for="firstname">First Name</label>
-                    <input type="text" id="firstname" name="firstname" required>
+                    <label for="fname">First Name</label>
+                    <input type="text" id="fname" name="fname" required>
                 </div>
                 <div class="form-group">
-                    <label for="lastname">Last Name</label>
-                    <input type="text" id="lastname" name="lastname" required>
+                    <label for="lname">Last Name</label>
+                    <input type="text" id="lname" name="lname" required>
                 </div>
                 <div class="form-group">
                     <label for="email">Email</label>

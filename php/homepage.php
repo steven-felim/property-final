@@ -7,6 +7,7 @@
     }
 
     $userEmail = $_SESSION['user_email'];
+    $userName = $_SESSION['user_name'];
     $userRole = $_SESSION['user_role'];
 ?>
 
@@ -36,15 +37,20 @@
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
-            <div class="user-info">
-                <p>Welcome, <?php echo htmlspecialchars($userEmail); ?> (<?php echo htmlspecialchars($userRole); ?>)</p>
-            </div>
+            <?php if (isset($_SESSION['user_email']) && isset($_SERVER['HTTP_REFERER']) && 
+                      (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)): ?>
+            <script>
+                window.onload = function() {
+                    alert("Welcome, <?php echo htmlspecialchars($userName); ?> (<?php echo htmlspecialchars($userRole); ?>)");
+                };
+            </script>
+            <?php endif; ?>
         </div>
     </header>
 
     <!-- Hero Section -->
     <section class="hero">
-        <div class="hero-content" style="margin-top: 100px;">
+        <div class="hero-content">
             <h1>Find Your Perfect Home</h1>
             <p>Your dream property is just a click away.</p>
         </div>
@@ -55,7 +61,6 @@
         <div class="container">
             <h2>Featured Properties</h2>
             <div id="property-list" class="property-list" style="margin-bottom: 100px;">
-                <!-- Dynamic property cards will be loaded here -->
             </div>
         </div>
     </section>

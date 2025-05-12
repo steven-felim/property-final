@@ -12,7 +12,7 @@ body {
     color: #333;
 }
 
-/* Container to center content */
+/* Container */
 .container {
     width: 80%;
     margin: 0 auto;
@@ -76,11 +76,13 @@ header nav ul li a:hover {
     background-position: center;
     height: 500px;
     display: flex;
+    flex-direction: column;
     justify-content: center;
     align-items: center;
     text-align: center;
     color: white;
     padding: 0 20px;
+    margin-top: 120px; /* Increase the margin to push below the header */
 }
 
 /* Dark Overlay */
@@ -113,6 +115,7 @@ header nav ul li a:hover {
 /* Property Listings */
 .properties {
     padding: 50px 0;
+    display: block;
     background-color: #fff;
 }
 
@@ -347,7 +350,7 @@ button:hover {
 }
 
 /* Register Page Layout */
-body {
+body.register-page {
     margin: 0;
     padding: 0;
     font-family: Arial, sans-serif;
