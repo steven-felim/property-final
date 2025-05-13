@@ -1,7 +1,6 @@
 <?php
     session_start();
 
-    // Show errors during development
     ini_set('display_errors', 1);
     ini_set('display_startup_errors', 1);
     error_reporting(E_ALL);
@@ -47,7 +46,7 @@
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_email'] = $email;
                     $_SESSION['user_role'] = $role;
-                    $_SESSION['user_name'] = trim($firstName . " " . $lastName);
+                    $_SESSION['user_name'] = $fullName;
                     header("Location: homepage.php");
                     exit();
                 } else {

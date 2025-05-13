@@ -37,7 +37,7 @@
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
-            <?php if (isset($_SESSION['user_email']) && isset($_SERVER['HTTP_REFERER']) && 
+            <?php if (isset($_SESSION['user_email']) && isset($_SESSION['user_name']) && isset($_SERVER['HTTP_REFERER']) && 
                       (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)): ?>
             <script>
                 window.onload = function() {

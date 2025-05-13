@@ -8,7 +8,6 @@
 
     $userEmail = $_SESSION['user_email'];
     $userRole = $_SESSION['user_role'];
-    $userName = $_SESSION['user_name'];
 ?>
 
 <!DOCTYPE html>
@@ -40,7 +39,46 @@
     <section class="profile">
         <div class="container">
             <h1>Your Profile</h1>
-            <p><strong>Name:</strong> <?php echo $userName; ?></p>
+            <p><strong>Name:</strong> <?php
+                $servername = "localhost";
+                $username = "root";
+                $password = "";
+                $dbname = "property"; // Replace with your database name
+
+                // Create connection
+                $conn = new mysqli($servername, $username, $password, $dbname);
+
+                // Check connection
+                if ($conn->connect_error) {
+                    die("Connection failed: " . $conn->connect_error);
+                }
+
+                if ($userRole === "client") {
+                    $userQuery = "SELECT fname, lname FROM CClient WHERE email = ?";
+                } elseif ($userRole === "property_owner") {
+                    $userQuery = "SELECT fname, lname FROM PropertyOwner WHERE email = ?";
+                } elseif ($userRole === "staff") {
+                    $userQuery = "SELECT fname, lname FROM Staff WHERE email = ?";
+                } else {
+                    die("Invalid role selected.");
+                }
+
+                $stmt = $conn->prepare($userQuery);
+                $stmt->bind_param("s", $userEmail);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $user = $result->fetch_assoc();
+
+                if ($user) {
+                    echo htmlspecialchars($user['fname']) . " " . htmlspecialchars($user['lname']);
+                } else {
+                    echo "User not found.";
+                }
+
+                $stmt->close();
+                $conn->close();
+                ?>
+            </p>
             <p><strong>Email:</strong> <?php echo $userEmail; ?></p>
             <p><strong>Rented Properties:</strong></p>
             <ul>
