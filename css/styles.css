@@ -82,7 +82,7 @@ header nav ul li a:hover {
     text-align: center;
     color: white;
     padding: 0 20px;
-    margin-top: 120px; /* Increase the margin to push below the header */
+    margin-top: 100px;
 }
 
 /* Dark Overlay */
