@@ -46,12 +46,14 @@ $userRole = $_SESSION['user_role'];
 
 <section class="property-details">
     <div class="container" style="margin-top: 100px;">
+        <h1>Property Details</h1>
         <div class="property-header">
-            <h1>Property Details</h1>
             <!-- LEFT: Image Carousel -->
             <div class="property-gallery" style="flex: 2; padding-right: 20px;">
                 <div class="carousel">
-                    <img id="carousel-image" src="" alt="Property Image" style="width: 100%; height: auto; border: 1px solid #ccc;">
+                    <div style="display: flex; justify-content: center; align-items: center; width: 700px; height: 400px;">
+                        <img id="carousel-image" src="" alt="Property Image" style="max-width:100%; max-height: 100%; height: auto; border: 1px solid #ccc;">
+                    </div>
                     <div style="text-align: center; margin-top: 10px;">
                         <button onclick="prevImage()">&#10094; Prev</button>
                         <button onclick="nextImage()">Next &#10095;</button>
@@ -104,16 +106,20 @@ $userRole = $_SESSION['user_role'];
 </footer>
 
 <script>
-    const urlParams = new URLSearchParams(window.location.search);
-    const propertyId = urlParams.get('id');
-
     let images = [];
     let currentImageIndex = 0;
 
+    const propertyId = new URLSearchParams(window.location.search).get('id');
+
     function updateCarousel() {
-        if (images.length === 0) return;
+        if (images.length === 0) {
+            document.getElementById('carousel-image').src = "../img/no-image-available.png";
+            document.getElementById('carousel-image').alt = "No Image Available";
+            return;
+        }
         const img = document.getElementById('carousel-image');
         img.src = `../uploads/${images[currentImageIndex]}`;
+        img.alt = "Property Image";
     }
 
     function nextImage() {
@@ -126,44 +132,19 @@ $userRole = $_SESSION['user_role'];
         updateCarousel();
     }
 
-    // Fetch images
+    // Proper fetch with fallback handling
     fetch(`../php/get-images.php?property_id=${propertyId}`)
         .then(res => res.json())
         .then(data => {
             images = data;
-            updateCarousel();
+            updateCarousel(); // this will automatically show fallback if empty
+        })
+        .catch(error => {
+            console.error("Image fetch failed:", error);
+            document.getElementById('carousel-image').src = "../img/no-image-available.png";
+            document.getElementById('carousel-image').alt = "No Image Available";
         });
 
-    // Fetch property details
-    fetch(`../php/get-property.php?id=${propertyId}`)
-        .then(res => res.json())
-        .then(data => {
-            document.getElementById('property-type').textContent = data.pType;
-            document.getElementById('property-address').textContent = `${data.street}, ${data.city}, ${data.postcode}`;
-            document.getElementById('property-rooms').textContent = data.rooms;
-            document.getElementById('property-rent').textContent = data.rent;
-        });
-
-    function rentProperty() {
-        alert("This would trigger a rent confirmation or redirect.");
-    }
-
-    document.getElementById('property-id').value = propertyId;
-    document.getElementById('comment-property-id').value = propertyId;
-
-    // Load property details
-    fetch(`../php/get-property.php?id=${propertyId}`)
-        .then(res => res.json())
-        .then(property => {
-            document.getElementById('property-info').innerHTML = `
-                <h1>${property.title}</h1>
-                <img src="${property.image_url}" alt="${property.title}" style="max-width: 100%;">
-                <p><strong>Price:</strong> $${property.price}/month</p>
-                <p><strong>Rooms:</strong> ${property.rooms}</p>
-                <p><strong>Location:</strong> ${property.location}</p>
-                <p><strong>Description:</strong> ${property.description}</p>
-            `;
-        });
 
     // Handle viewing form
     document.getElementById('viewing-form').addEventListener('submit', function (e) {
