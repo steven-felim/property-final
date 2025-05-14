@@ -1,9 +1,21 @@
+<?php
+    session_start();
+
+    if (!isset($_SESSION['user_email'])) {
+        header("Location: index.php");
+        exit();
+    }
+
+    $userEmail = $_SESSION['user_email'];
+    $userRole = $_SESSION['user_role'];
+?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>All Properties - Property Renting Website</title>
+    <title>All Viewings - Property Renting Website</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body>
@@ -14,10 +26,10 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="index.html">Home</a></li>
-                    <li><a href="properties.html">Properties</a></li>
-                    <li><a href="viewing.html">Viewing</li>
-                    <li><a href="profile.html">Profile</a></li>
+                    <li><a href="homepage.php">Home</a></li>
+                    <li><a href="properties.php">Properties</a></li>
+                    <li><a href="viewing.php">Viewing</li>
+                    <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
         </div>
@@ -26,25 +38,25 @@
 
     <section class="properties">
         <div class="container" style="margin-top: 100px;">
-            <h1>All Properties</h1>
+            <h1>All Viewings</h1>
             <div class="property-list" id="property-list">
                 <div class="property-card">
                     <img src="../img/property1.jpg" alt="Cozy Apartment">
                     <h3>Cozy Apartment</h3>
                     <p>$1200/month</p>
-                    <a href="property.html?id=1">View Details</a>
+                    <a href="view.php?id=1">View Comments</a>
                 </div>
                 <div class="property-card">
                     <img src="../img/property2.jpg" alt="Modern Condo">
                     <h3>Modern Condo</h3>
                     <p>$1500/month</p>
-                    <a href="property.html?id=2">View Details</a>
+                    <a href="view.php?id=2">View Comments</a>
                 </div>
                 <div class="property-card">
                     <img src="../img/property3.jpg" alt="Spacious House">
                     <h3>Spacious House</h3>
                     <p>$2000/month</p>
-                    <a href="property.html?id=3">View Details</a>
+                    <a href="view.php?id=3">View Comments</a>
                 </div>
             </div>
         </div>
@@ -73,7 +85,7 @@
                         <img src="${property.image_url}" alt="${property.title}">
                         <h3>${property.title}</h3>
                         <p>$${property.price}/month</p>
-                        <a href="property.html?id=${property.id}">View Details</a>
+                        <a href="property.php?id=${property.id}">View Details</a>
                     `;
                     propertyList.appendChild(propertyCard);
                 });
