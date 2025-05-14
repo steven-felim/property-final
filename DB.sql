@@ -1,5 +1,5 @@
 CREATE TABLE Branch (
-    branchNo CHAR(4) NOT NULL,
+    branchNo CHAR(4) NOT NULL DEFAULT (UUID()),
     street VARCHAR(25) NOT NULL DEFAULT '',
     city VARCHAR(20) NOT NULL DEFAULT '',
     postcode CHAR(7) NOT NULL DEFAULT '',
@@ -7,7 +7,7 @@ CREATE TABLE Branch (
 );
 
 CREATE TABLE Staff (
-    staffNo CHAR(4) NOT NULL,
+    staffNo CHAR(4) NOT NULL DEFAULT (UUID()),
     fName VARCHAR(50) NOT NULL DEFAULT '',
     lName VARCHAR(50) NOT NULL DEFAULT '',
     email VARCHAR(100) NOT NULL,
@@ -25,7 +25,7 @@ CREATE TABLE Staff (
 );
  
 CREATE TABLE PrivateOwner (
-    ownerNo CHAR(4) NOT NULL,
+    ownerNo CHAR(4) NOT NULL DEFAULT (UUID()),
     fName VARCHAR(50) NOT NULL DEFAULT '',
     lName VARCHAR(50) NOT NULL DEFAULT '',
     password VARCHAR(256) NOT NULL,
@@ -41,7 +41,7 @@ CREATE TABLE PrivateOwner (
 );
 
 CREATE TABLE PropertyForRent (
-    propertyNo CHAR(4) NOT NULL,
+    propertyNo CHAR(4) NOT NULL DEFAULT (UUID()),
     street VARCHAR(25) NOT NULL DEFAULT '',
     city VARCHAR(20) NOT NULL DEFAULT '',
     postcode CHAR(7) NOT NULL DEFAULT '',
@@ -77,7 +77,7 @@ CREATE TABLE PropertyImage (
 );
 
 CREATE TABLE CClient (
-    clientNo CHAR(4) NOT NULL,
+    clientNo CHAR(4) NOT NULL DEFAULT (UUID()),
     fName VARCHAR(50) NOT NULL DEFAULT '',
     lName VARCHAR(50) NOT NULL DEFAULT '',
     password VARCHAR(256) NOT NULL,

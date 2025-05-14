@@ -28,7 +28,9 @@
                 <ul>
                     <li><a href="homepage.php">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
-                    <li><a href="viewing.php">Viewing</li>
+                    <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
+                        <li><a href="viewing.php">Viewing</a></li>
+                    <?php endif; ?>
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
@@ -64,7 +66,7 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 Your Website | All Rights Reserved</p>
+            <p>&copy; 2025 HBProperty | All Rights Reserved</p>
             <div class="social-links">
                 <a href="#">Facebook</a>
                 <a href="#">Instagram</a>

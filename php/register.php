@@ -2,6 +2,8 @@
     session_start();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        require_once './db_connection.php';
+
         // Get form inputs
         $firstName = $_POST['fname'];
         $lastName = $_POST['lname'];
@@ -11,41 +13,41 @@
 
         // Hash the password
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-        // Connect to the database
-        $servername = "localhost";
-        $dbUsername = "root";
-        $dbPassword = "";
-        $dbName = "property";
-
-        $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbName);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Choose the table
-        if ($role === "client") {
-            $sql = "INSERT INTO CClient (fname, lname, email, password) VALUES (?, ?, ?, ?)";
-        } elseif ($role === "property_owner") {
-            $sql = "INSERT INTO PropertyOwner (fname, lname, email, password) VALUES (?, ?, ?, ?)";
+        
+        // Check if email already exists
+        $checkEmailQuery = "SELECT * FROM CClient WHERE email = ? UNION SELECT * FROM PropertyOwner WHERE email = ? UNION SELECT * FROM Staff WHERE email = ?";
+        $stmt = $conn->prepare($checkEmailQuery);
+        $stmt->bind_param("sss", $email, $email, $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $error = "Email already exists.";
         } else {
-            die("Invalid role specified.");
+            $tableMap = [
+                "client" => "CClient",
+                "property_owner" => "PropertyOwner",
+                "staff" => "Staff"
+            ];
+
+            // Choose the table
+            if (!isset($tableMap[$role])) {
+                $error = "Invalid role selected.";
+            } else {
+                $sql = "INSERT INTO {$tableMap[$role]} (fname, lname, email, password) VALUES (?, ?, ?, ?)";
+            }
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $firstName, $lastName, $email, $hashedPassword);
+
+            if ($stmt->execute()) {
+                $_SESSION['user_email'] = $email;
+                $_SESSION['user_role'] = $role;
+                header("Location: homepage.php");
+                exit();
+            } else {
+                $error = "Registration error: " . $stmt->error;
+            }
         }
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $firstName, $lastName, $email, $hashedPassword);
-
-        if ($stmt->execute()) {
-            $_SESSION['user_email'] = $email;
-            $_SESSION['user_role'] = $role;
-            header("Location: homepage.php");
-            exit();
-        } else {
-            $error = "Registration error: " . $stmt->error;
-        }
-
         $stmt->close();
         $conn->close();
     }

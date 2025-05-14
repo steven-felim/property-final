@@ -8,60 +8,51 @@
     $error = "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-        $firstName = $_POST['fname'];
-        $lastName = $_POST['lname'];
-        $email = $_POST['email'];
+        require_once './db_connection.php';
+
+        $email = trim($_POST['email']);
         $password = $_POST['password'];
         $role = $_POST['role'];
 
-        $servername = "localhost";
-        $dbUsername = "root";
-        $dbPassword = "";
-        $dbName = "property";
+        $tableMap = [
+            "client" => "CClient",
+            "property_owner" => "PropertyOwner",
+            "staff" => "Staff"
+        ];
 
-        $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbName);
-
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Determine table by role
-        if ($role === "client") {
-            $sql = "SELECT * FROM CClient WHERE email = ?";
-        } elseif ($role === "property_owner") {
-            $sql = "SELECT * FROM PropertyOwner WHERE email = ?";
-        } elseif ($role === "staff") {
-            $sql = "SELECT * FROM Staff WHERE email = ?";
-        } else {
+        if (!isset($tableMap[$role])) {
             $error = "Invalid role selected.";
-        }
-
-        if (empty($error)) {
+        } else {
+            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
             $stmt = $conn->prepare($sql);
-            $stmt->bind_param("s", $email);
-            $stmt->execute();
-            $result = $stmt->get_result();
 
-            if ($user = $result->fetch_assoc()) {
-                if (password_verify($password, $user['password'])) {
-                    $_SESSION['user_email'] = $email;
-                    $_SESSION['user_role'] = $role;
-                    $_SESSION['user_name'] = $fullName;
-                    header("Location: homepage.php");
-                    exit();
+            if ($stmt) {
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($user = $result->fetch_assoc()) {
+                    if (password_verify($password, $user['password'])) {
+                        $_SESSION['user_email'] = $email;
+                        $_SESSION['user_role'] = $role;
+s                        header("Location: homepage.php");
+                        exit();
+                    } else {
+                        $error = "Incorrect password.";
+                    }
                 } else {
-                    $error = "Incorrect password.";
+                    $error = "No account found with that email.";
                 }
+                $stmt->close();
             } else {
-                $error = "No account found with that email.";
+                $error = "Database query failed.";
             }
-
-            $stmt->close();
         }
 
         $conn->close();
     }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
