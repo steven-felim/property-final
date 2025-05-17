@@ -45,8 +45,12 @@
 
     <footer>
         <div class="container">
-            <p>&copy; 2025 HBProperty | All Rights Reserved</p>
-            
+            <p>&copy; 2025 Your Website | All Rights Reserved</p>
+            <div class="social-links">
+                <a href="#">Facebook</a>
+                <a href="#">Instagram</a>
+                <a href="#">Twitter</a>
+            </div>
         </div>
     </footer>
 </body>

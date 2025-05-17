@@ -2,52 +2,6 @@
     session_start();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
-<<<<<<< HEAD
-        // Get form inputs
-        $firstName = $_POST['fname'];
-        $lastName = $_POST['lname'];
-        $email = $_POST['email'];
-        $password = $_POST['password'];
-        $role = $_POST['role'];
-
-        // Hash the password
-        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
-
-        // Connect to the database
-        $servername = "localhost";
-        $dbUsername = "root";
-        $dbPassword = "";
-        $dbName = "property";
-
-        $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbName);
-
-        // Check connection
-        if ($conn->connect_error) {
-            die("Connection failed: " . $conn->connect_error);
-        }
-
-        // Choose the table
-        if ($role === "client") {
-            $sql = "INSERT INTO CClient (fname, lname, email, password) VALUES (?, ?, ?, ?)";
-        } elseif ($role === "property_owner") {
-            $sql = "INSERT INTO PropertyOwner (fname, lname, email, password) VALUES (?, ?, ?, ?)";
-        } else {
-            die("Invalid role specified.");
-        }
-
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("ssss", $firstName, $lastName, $email, $hashedPassword);
-
-        if ($stmt->execute()) {
-            $_SESSION['user_email'] = $email;
-            $_SESSION['user_role'] = $role;
-            header("Location: homepage.php");
-            exit();
-        } else {
-            $error = "Registration error: " . $stmt->error;
-        }
-
-=======
         require_once './db_connection.php';
 
         // Get form inputs
@@ -94,7 +48,6 @@
                 $error = "Registration error: " . $stmt->error;
             }
         }
->>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
         $stmt->close();
         $conn->close();
     }

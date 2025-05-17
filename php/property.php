@@ -1,15 +1,4 @@
 <?php
-<<<<<<< HEAD
-    session_start();
-
-    if (!isset($_SESSION['user_email'])) {
-        header("Location: index.php");
-        exit();
-    }
-
-    $userEmail = $_SESSION['user_email'];
-    $userRole = $_SESSION['user_role'];
-=======
 session_start();
 
 if (!isset($_SESSION['user_email'])) {
@@ -19,7 +8,6 @@ if (!isset($_SESSION['user_email'])) {
 
 $userEmail = $_SESSION['user_email'];
 $userRole = $_SESSION['user_role'];
->>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
 ?>
 
 <!DOCTYPE html>
@@ -27,86 +15,6 @@ $userRole = $_SESSION['user_role'];
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<<<<<<< HEAD
-    <title>Property Details - Property Renting Website</title>
-    <link rel="stylesheet" href="../css/styles.css">
-</head>
-<body>
-    <header>
-        <div class="container">
-            <div class="logo">
-                <img src="../img/logo.png" alt="Logo" class="logo-img">
-            </div>
-            <nav>
-                <ul>
-                    <li><a href="homepage.php">Home</a></li>
-                    <li><a href="properties.php">Properties</a></li>
-                    <li><a href="viewing.php">Viewing</li>
-                    <li><a href="profile.php">Profile</a></li>
-                </ul>
-            </nav>
-        </div>
-    </header>
-
-
-    <section class="property-details">
-        <div class="container" id="property-details">
-            <div class="property-layout" style=" margin-top: 100px;">
-                <div class="property-gallery" style="width: 66.66%; float: left;">
-                    <div class="large-photo">
-                        <img id="highlighted-photo" src="" alt="Highlighted Property Photo">
-                    </div>
-                    <div class="photo-thumbnails">
-                        <!-- Thumbnails will be populated by JavaScript -->
-                    </div>
-                </div>
-                <div class="property-info" style="width: 33.33%; float: left; padding-left: 20px; margin-bottom: 100px;">
-                    <h1 id="property-title">Property Title</h1>
-                    <p><strong>Price            :</strong> <span id="property-price">$0/month</span></p>
-                    <p><strong>Number of Rooms  :</strong> <span id="property-rooms">Rooms goes here.</span></p>
-                    <p><strong>Location         :</strong> <span id="property-location">Location goes here.</span></p>
-
-                    <div class="property-actions">
-                        <button id="negotiate-button">Negotiate</button>
-                        <button id="viewing-button">Schedule Viewing</button>
-                        <button id="rent-button">Rent This Property</button>
-                    </div>
-                </div>
-                <div style="clear: both;"></div>
-            </div>
-        </div>
-    </section>
-
-    <footer>
-        <div class="container">
-            <p>&copy; 2025 Your Website | All Rights Reserved</p>
-            <div class="social-links">
-                <a href="#">Facebook</a>
-                <a href="#">Instagram</a>
-                <a href="#">Twitter</a>
-            </div>
-        </div>
-    </footer>
-
-    <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const propertyId = urlParams.get('id');
-
-        fetch(`../php/get-property.php?id=${propertyId}`)
-            .then(response => response.json())
-            .then(property => {
-                const container = document.getElementById('property-details');
-                container.innerHTML = `
-                    <h1>${property.title}</h1>
-                    <img src="${property.image_url}" alt="${property.title}">
-                    <p><strong>Price:</strong> $${property.price}/month</p>
-                    <p><strong>Description:</strong> ${property.description}</p>
-                    <p><strong>Location:</strong> ${property.location}</p>
-                `;
-            })
-            .catch(error => console.log('Error loading property:', error));
-    </script>
-=======
     <title>Property Details</title>
     <link rel="stylesheet" href="../css/styles.css">
     <style>
@@ -279,6 +187,5 @@ $userRole = $_SESSION['user_role'];
         });
     });
 </script>
->>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
 </body>
 </html>

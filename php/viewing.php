@@ -28,13 +28,9 @@
                 <ul>
                     <li><a href="homepage.php">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
-<<<<<<< HEAD
-                    <li><a href="viewing.php">Viewing</li>
-=======
                     <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
                         <li><a href="viewing.php">Viewing</a></li>
                     <?php endif; ?>
->>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
