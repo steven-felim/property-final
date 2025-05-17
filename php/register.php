@@ -2,6 +2,7 @@
     session_start();
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+<<<<<<< HEAD
         // Get form inputs
         $firstName = $_POST['fname'];
         $lastName = $_POST['lname'];
@@ -46,6 +47,54 @@
             $error = "Registration error: " . $stmt->error;
         }
 
+=======
+        require_once './db_connection.php';
+
+        // Get form inputs
+        $firstName = $_POST['fname'];
+        $lastName = $_POST['lname'];
+        $email = $_POST['email'];
+        $password = $_POST['password'];
+        $role = $_POST['role'];
+
+        // Hash the password
+        $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
+        
+        // Check if email already exists
+        $checkEmailQuery = "SELECT * FROM CClient WHERE email = ? UNION SELECT * FROM PropertyOwner WHERE email = ? UNION SELECT * FROM Staff WHERE email = ?";
+        $stmt = $conn->prepare($checkEmailQuery);
+        $stmt->bind_param("sss", $email, $email, $email);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result->num_rows > 0) {
+            $error = "Email already exists.";
+        } else {
+            $tableMap = [
+                "client" => "CClient",
+                "property_owner" => "PropertyOwner",
+                "staff" => "Staff"
+            ];
+
+            // Choose the table
+            if (!isset($tableMap[$role])) {
+                $error = "Invalid role selected.";
+            } else {
+                $sql = "INSERT INTO {$tableMap[$role]} (fname, lname, email, password) VALUES (?, ?, ?, ?)";
+            }
+
+            $stmt = $conn->prepare($sql);
+            $stmt->bind_param("ssss", $firstName, $lastName, $email, $hashedPassword);
+
+            if ($stmt->execute()) {
+                $_SESSION['user_email'] = $email;
+                $_SESSION['user_role'] = $role;
+                header("Location: homepage.php");
+                exit();
+            } else {
+                $error = "Registration error: " . $stmt->error;
+            }
+        }
+>>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
         $stmt->close();
         $conn->close();
     }

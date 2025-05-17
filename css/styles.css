@@ -171,6 +171,12 @@ header nav ul li a:hover {
     background-color: #444;
 }
 
+.property-header {
+    display: flex;
+    gap: 20px;
+    flex-wrap: wrap; /* Optional: helps for smaller screens */
+}
+
 /* Footer */
 footer {
     position: fixed; 

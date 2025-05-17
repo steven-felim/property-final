@@ -8,6 +8,7 @@
     $error = "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+<<<<<<< HEAD
         $firstName = $_POST['fname'];
         $lastName = $_POST['lname'];
         $email = $_POST['email'];
@@ -57,12 +58,57 @@
             }
 
             $stmt->close();
+=======
+        require_once './db_connection.php';
+
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
+        $role = $_POST['role'];
+
+        $tableMap = [
+            "client" => "CClient",
+            "property_owner" => "PropertyOwner",
+            "staff" => "Staff"
+        ];
+
+        if (!isset($tableMap[$role])) {
+            $error = "Invalid role selected.";
+        } else {
+            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
+            $stmt = $conn->prepare($sql);
+
+            if ($stmt) {
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($user = $result->fetch_assoc()) {
+                    if (password_verify($password, $user['password'])) {
+                        $_SESSION['user_email'] = $email;
+                        $_SESSION['user_role'] = $role;
+s                        header("Location: homepage.php");
+                        exit();
+                    } else {
+                        $error = "Incorrect password.";
+                    }
+                } else {
+                    $error = "No account found with that email.";
+                }
+                $stmt->close();
+            } else {
+                $error = "Database query failed.";
+            }
+>>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
         }
 
         $conn->close();
     }
 ?>
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
 <!DOCTYPE html>
 <html lang="en">
 <head>

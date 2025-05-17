@@ -9,6 +9,11 @@
     $userEmail = $_SESSION['user_email'];
     $userName = $_SESSION['user_name'];
     $userRole = $_SESSION['user_role'];
+<<<<<<< HEAD
+=======
+
+    require_once './db_connection.php';
+>>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
 ?>
 
 <!DOCTYPE html>
@@ -33,7 +38,13 @@
                 <ul>
                     <li><a href="homepage.php">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
+<<<<<<< HEAD
                     <li><a href="viewing.php">Viewing</a></li>
+=======
+                    <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
+                    <li><a href="viewing.php">Viewing</a></li>
+                <?php endif; ?>
+>>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
@@ -68,12 +79,16 @@
     <!-- Footer -->
     <footer>
         <div class="container">
+<<<<<<< HEAD
             <p>&copy; 2025 Your Website | All Rights Reserved</p>
             <div class="social-links">
                 <a href="#">Facebook</a>
                 <a href="#">Instagram</a>
                 <a href="#">Twitter</a>
             </div>
+=======
+            <p>&copy; 2025 HBProperty | All Rights Reserved</p>
+>>>>>>> 9d17df903176848341ee1a94c70b9940bddffd7a
         </div>
     </footer>
 
