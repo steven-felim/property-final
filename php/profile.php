@@ -79,6 +79,21 @@
         </div>
     </section>
 
+    <div class="container" style="text-align: center; margin-top: 20px;">
+        <form action="index.php" method="post">
+            <input type="hidden" name="logout" value="1">
+            <button type="submit" class="btn-logout">Log Out</button>
+        </form>
+    </div>
+    <?php
+    if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
+        session_unset();
+        session_destroy();
+        header("Location: index.php");
+        exit();
+    }
+    ?>
+
     <footer>
         <div class="container">
             <p>&copy; 2025 HBProperty | All Rights Reserved</p>

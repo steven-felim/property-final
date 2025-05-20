@@ -8,6 +8,13 @@
     $error = "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+        if (isset($_POST['logout'])) {
+            session_unset();
+            session_destroy();
+            header("Location: index.php");
+            exit();
+        }
+
         require_once './db_connection.php';
 
         $email = trim($_POST['email']);
