@@ -15,7 +15,12 @@
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         
         // Check if email already exists
-        $checkEmailQuery = "SELECT * FROM CClient WHERE email = ? UNION SELECT * FROM PropertyOwner WHERE email = ? UNION SELECT * FROM Staff WHERE email = ?";
+        $checkEmailQuery = "SELECT email FROM CClient WHERE email = ? 
+                    UNION 
+                    SELECT email FROM PrivateOwner WHERE email = ? 
+                    UNION 
+                    SELECT email FROM Staff WHERE email = ?";
+
         $stmt = $conn->prepare($checkEmailQuery);
         $stmt->bind_param("sss", $email, $email, $email);
         $stmt->execute();
@@ -24,20 +29,24 @@
             $error = "Email already exists.";
         } else {
             $tableMap = [
-                "client" => "CClient",
-                "property_owner" => "PropertyOwner",
-                "staff" => "Staff"
+                "client" => ["table" => "CClient", "id_column" => "clientNo"],
+                "property_owner" => ["table" => "PrivateOwner", "id_column" => "ownerNo"],
+                "staff" => ["table" => "Staff", "id_column" => "staffNo"]
             ];
+
 
             // Choose the table
             if (!isset($tableMap[$role])) {
                 $error = "Invalid role selected.";
             } else {
-                $sql = "INSERT INTO {$tableMap[$role]} (fname, lname, email, password) VALUES (?, ?, ?, ?)";
-            }
+                $tableName = $tableMap[$role]['table'];
+                $idColumn = $tableMap[$role]['id_column'];
+                $newId = uniqid(); // You can use a UUID instead for better uniqueness if needed
 
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("ssss", $firstName, $lastName, $email, $hashedPassword);
+                $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password) VALUES (?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssss", $newId, $firstName, $lastName, $email, $hashedPassword);
+            }
 
             if ($stmt->execute()) {
                 $_SESSION['user_email'] = $email;

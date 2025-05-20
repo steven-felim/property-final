@@ -46,7 +46,7 @@
             <p><strong>Name:</strong> <?php
                 $tableMap = [
                     "client" => "CClient",
-                    "property_owner" => "PropertyOwner",
+                    "property_owner" => "PrivateOwner",
                     "staff" => "Staff"
                 ];
 

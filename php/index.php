@@ -16,7 +16,7 @@
 
         $tableMap = [
             "client" => "CClient",
-            "property_owner" => "PropertyOwner",
+            "property_owner" => "PrivateOwner",
             "staff" => "Staff"
         ];
 
@@ -35,7 +35,7 @@
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['user_email'] = $email;
                         $_SESSION['user_role'] = $role;
-s                        header("Location: homepage.php");
+                        header("Location: homepage.php");
                         exit();
                     } else {
                         $error = "Incorrect password.";
