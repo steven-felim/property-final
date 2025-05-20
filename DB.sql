@@ -1,3 +1,5 @@
+ALTER DATABASE property CHARACTER SET = utf8mb4 COLLATE = utf8mb4_unicode_ci;
+
 -- === COUNTER TABLES ===
 CREATE TABLE CityPropertyCounter (
     city VARCHAR(20) PRIMARY KEY,
@@ -9,8 +11,20 @@ CREATE TABLE StaffCounter (
     counter INT UNSIGNED NOT NULL DEFAULT 0
 );
 
+CREATE TABLE ClientCounter (
+    prefix CHAR(2) PRIMARY KEY,
+    counter INT UNSIGNED NOT NULL DEFAULT 0
+);
+
+CREATE TABLE OwnerCounter (
+    prefix CHAR(2) PRIMARY KEY,
+    counter INT UNSIGNED NOT NULL DEFAULT 0
+);
+
 -- Insert base prefixes
 INSERT INTO StaffCounter (prefix, counter) VALUES ('A', 0);
+INSERT INTO ClientCounter (prefix, counter) VALUES ('CR', 0);
+INSERT INTO OwnerCounter (prefix, counter) VALUES ('CO', 0);
 
 -- === MAIN TABLES ===
 

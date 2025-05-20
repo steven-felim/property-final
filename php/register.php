@@ -15,9 +15,9 @@
         $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
         
         // Check if email already exists
-        $checkEmailQuery = "SELECT email FROM CClient WHERE email = ? 
+        $checkEmailQuery = "SELECT eMail FROM CClient WHERE eMail = ? 
                     UNION 
-                    SELECT email FROM PrivateOwner WHERE email = ? 
+                    SELECT eMail FROM PrivateOwner WHERE eMail = ? 
                     UNION 
                     SELECT email FROM Staff WHERE email = ?";
 
@@ -29,9 +29,9 @@
             $error = "Email already exists.";
         } else {
             $tableMap = [
-                "client" => ["table" => "CClient", "id_column" => "clientNo"],
-                "property_owner" => ["table" => "PrivateOwner", "id_column" => "ownerNo"],
-                "staff" => ["table" => "Staff", "id_column" => "staffNo"]
+                "client" => ["table" => "CClient", "id_column" => "clientNo", "email_column" => "eMail"],
+                "property_owner" => ["table" => "PrivateOwner", "id_column" => "ownerNo", "email_column" => "eMail"],
+                "staff" => ["table" => "Staff", "id_column" => "staffNo", "email_column" => "email"]
             ];
 
 
@@ -41,9 +41,10 @@
             } else {
                 $tableName = $tableMap[$role]['table'];
                 $idColumn = $tableMap[$role]['id_column'];
+                $emailColumn = $tableMap[$role]['email_column'];
                 $newId = uniqid(); // You can use a UUID instead for better uniqueness if needed
 
-                $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password) VALUES (?, ?, ?, ?, ?)";
+                $sql = "INSERT INTO {$tableName} ($idColumn, fName, lName, $emailColumn, password) VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("sssss", $newId, $firstName, $lastName, $email, $hashedPassword);
             }
