@@ -34,6 +34,59 @@
                 "staff" => ["table" => "Staff", "id_column" => "staffNo"]
             ];
 
+            function generateRoleId($conn, $role, $tableName, $idColumn) {
+                switch ($role) {
+                    case 'client':
+                        $prefix = 'CR';
+                        break;
+                    case 'property_owner':
+                        $prefix = 'CO';
+                        break;
+                    case 'staff':
+                        $prefix = 'A';
+                        break;
+                    default:
+                        return null;
+                }
+
+                // Get the highest current ID
+                $sql = "SELECT MAX($idColumn) AS max_id FROM $tableName WHERE $idColumn LIKE ?";
+                $likePrefix = $prefix . '%';
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("s", $likePrefix);
+                $stmt->execute();
+                $result = $stmt->get_result();
+                $row = $result->fetch_assoc();
+
+                if ($row && $row['max_id']) {
+                    $maxId = $row['max_id'];
+
+                    if ($role === 'staff') {
+                        // Example: AZ07 → AZ08
+                        $alpha = substr($maxId, 1, 1);
+                        $num = (int)substr($maxId, 2);
+                        $num++;
+                        if ($num > 99) {
+                            $alpha = chr(ord($alpha) + 1);
+                            $num = 1;
+                        }
+                        return $prefix . $alpha . str_pad($num, 2, '0', STR_PAD_LEFT);
+                    } else {
+                        // Example: CR09 → CR10
+                        $num = (int)substr($maxId, 2);
+                        $num++;
+                        return $prefix . str_pad($num, 2, '0', STR_PAD_LEFT);
+                    }
+                } else {
+                    // First ID
+                    if ($role === 'staff') {
+                        return $prefix . 'A01';
+                    } else {
+                        return $prefix . '01';
+                    }
+                }
+            }
+
 
             // Choose the table
             if (!isset($tableMap[$role])) {
@@ -41,7 +94,9 @@
             } else {
                 $tableName = $tableMap[$role]['table'];
                 $idColumn = $tableMap[$role]['id_column'];
-                $newId = uniqid(); // You can use a UUID instead for better uniqueness if needed
+
+                // Ensure generated ID is unique (you may want to loop here for robustness)
+                $newId = generateRoleId($conn, $role, $tableName, $idColumn);
 
                 $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password) VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
