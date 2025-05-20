@@ -8,6 +8,7 @@
     $error = "";
 
     if ($_SERVER["REQUEST_METHOD"] == "POST") {
+<<<<<<< HEAD
         $firstName = $_POST['fname'];
         $lastName = $_POST['lname'];
         $email = $_POST['email'];
@@ -18,6 +19,26 @@
         $dbUsername = "root";
         $dbPassword = "";
         $dbName = "property";
+=======
+        if (isset($_POST['logout'])) {
+            session_unset();
+            session_destroy();
+            header("Location: index.php");
+            exit();
+        }
+
+        require_once './db_connection.php';
+
+        $email = trim($_POST['email']);
+        $password = $_POST['password'];
+        $role = $_POST['role'];
+
+        $tableMap = [
+            "client" => "CClient",
+            "property_owner" => "PrivateOwner",
+            "staff" => "Staff"
+        ];
+>>>>>>> 0ab3fdb007d3c2a96b9c1767bd242f9b1c75e8f3
 
         $conn = new mysqli($servername, $dbUsername, $dbPassword, $dbName);
 
@@ -42,6 +63,7 @@
             $stmt->execute();
             $result = $stmt->get_result();
 
+<<<<<<< HEAD
             if ($user = $result->fetch_assoc()) {
                 if (password_verify($password, $user['password'])) {
                     $_SESSION['user_email'] = $email;
@@ -49,6 +71,22 @@
                     $_SESSION['user_name'] = $fullName;
                     header("Location: homepage.php");
                     exit();
+=======
+            if ($stmt) {
+                $stmt->bind_param("s", $email);
+                $stmt->execute();
+                $result = $stmt->get_result();
+
+                if ($user = $result->fetch_assoc()) {
+                    if (password_verify($password, $user['password'])) {
+                        $_SESSION['user_email'] = $email;
+                        $_SESSION['user_role'] = $role;
+                        header("Location: homepage.php");
+                        exit();
+                    } else {
+                        $error = "Incorrect password.";
+                    }
+>>>>>>> 0ab3fdb007d3c2a96b9c1767bd242f9b1c75e8f3
                 } else {
                     $error = "Incorrect password.";
                 }
