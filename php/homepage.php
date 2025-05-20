@@ -1,16 +1,16 @@
 <?php
-    session_start();
+session_start();
 
-    if (!isset($_SESSION['user_email'])) {
-        header("Location: index.php");
-        exit();
-    }
+if (!isset($_SESSION['user_email'])) {
+    header("Location: index.php");
+    exit();
+}
 
-    $userEmail = $_SESSION['user_email'];
-    $userName = $_SESSION['user_name'];
-    $userRole = $_SESSION['user_role'];
+$userEmail = $_SESSION['user_email'];
+$userName = $_SESSION['user_name'];
+$userRole = $_SESSION['user_role'];
 
-    require_once './db_connection.php';
+require_once './db_connection.php';
 ?>
 
 <!DOCTYPE html>
@@ -31,23 +31,31 @@
             <div class="logo">
                 <img src="../img/logo.png" alt="Logo" class="logo-img">
             </div>
+
+            <!-- Search Form -->
+            <form class="search-form" action="search.php" method="get">
+                <input type="text" name="query" placeholder="Cari properti...">
+            </form>
+            <!-- Navigation -->
             <nav>
                 <ul>
                     <li><a href="homepage.php">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
                     <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
-                    <li><a href="viewing.php">Viewing</a></li>
-                <?php endif; ?>
+                        <li><a href="viewing.php">Viewing</a></li>
+                    <?php endif; ?>
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
-            <?php if (isset($_SESSION['user_email']) && isset($_SESSION['user_name']) && isset($_SERVER['HTTP_REFERER']) && 
-                      (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)): ?>
-            <script>
-                window.onload = function() {
-                    alert("Welcome, <?php echo htmlspecialchars($userName); ?> (<?php echo htmlspecialchars($userRole); ?>)");
-                };
-            </script>
+            <?php if (
+                isset($_SESSION['user_email']) && isset($_SESSION['user_name']) && isset($_SERVER['HTTP_REFERER']) &&
+                (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)
+            ): ?>
+                <script>
+                    window.onload = function () {
+                        alert("Welcome, <?php echo htmlspecialchars($userName); ?> (<?php echo htmlspecialchars($userRole); ?>)");
+                    };
+                </script>
             <?php endif; ?>
         </div>
     </header>
@@ -97,5 +105,25 @@
             .catch(error => console.log('Error fetching properties:', error));
     </script>
 
+    <script>
+        function searchProperty() {
+            const keyword = document.getElementById('searchInput').value;
+            if (keyword.trim() === '') {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
+
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "search.php?query=" + encodeURIComponent(keyword), true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('searchResults').innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
+        }
+    </script>
+
 </body>
+
 </html>
