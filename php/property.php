@@ -71,28 +71,37 @@ $userRole = $_SESSION['user_role'];
             </div>
         </div>
 
+        <hr style="margin: 40px 0;">
+
         <!-- Schedule Viewing -->
         <div class="viewing-form">
-            <h3>Schedule a Viewing</h3>
+            <br><h3>Schedule a Viewing</h3><br>
+            <div id="viewing-message">Last visited property: DD/MM/YYYY</div>
             <form id="viewing-form">
                 <label for="viewing-date">Choose a date:</label>
                 <input type="date" id="viewing-date" name="viewing_date" required>
                 <input type="hidden" id="property-id" name="property_id">
                 <button type="submit">Submit Viewing Request</button>
             </form>
-            <div id="viewing-message"></div>
+            <br>
         </div>
 
-        <!-- Comments Section -->
-        <div class="comment-box">
-            <h3>Recent Comments</h3>
-            <div id="comments-list">Loading comments...</div>
+        <hr style="margin: 40px 0;">
 
+        <!-- Comments Section -->
+        <div class="comments-section">
+            <br><h3>Comments</h3><br>
+            <div id="comments-list">DD/MM/YYYY - Loading client's comments...</div>
+            <br>
             <h4>Leave a Comment</h4>
             <form id="comment-form">
-                <textarea name="comment" id="comment" rows="4" required></textarea>
-                <input type="hidden" name="property_id" id="comment-property-id">
-                <button type="submit">Post Comment</button>
+                <div class="comments-list" id="comments-list">
+                    <!-- Comments will be populated by JavaScript -->
+                </div>
+                <div class="add-comment">
+                    <textarea id="comment-text" placeholder="Write your comment here..." rows="4" style="width: 100%;"></textarea>
+                    <button id="submit-comment" style="margin-top: 10px;">Submit</button>
+                </div>
             </form>
             <div id="comment-message"></div>
         </div>

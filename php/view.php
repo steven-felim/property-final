@@ -28,7 +28,9 @@
                 <ul>
                     <li><a href="homepage.php">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
-                    <li><a href="viewing.php">Viewing</li>
+                    <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
+                        <li><a href="viewing.php">Viewing</a></li>
+                    <?php endif; ?>
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
@@ -50,13 +52,7 @@
                 <div class="view-info" style="width: 33.33%; float: left; padding-left: 20px; margin-bottom: 100px;">
                     <div class="comments-section">
                         <h2>Comments</h2>
-                        <div class="comments-list" id="comments-list">
-                            <!-- Comments will be populated by JavaScript -->
-                        </div>
-                        <div class="add-comment">
-                            <textarea id="comment-text" placeholder="Write your comment here..." rows="4" style="width: 100%;"></textarea>
-                            <button id="submit-comment" style="margin-top: 10px;">Submit</button>
-                        </div>
+                        <!-- Tampilkan semua komen dari client, hanya bisa diakses owner & staff -->
                     </div>
 
                     <script>

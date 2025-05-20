@@ -76,7 +76,7 @@
                             <h3><?php echo htmlspecialchars($property['pType']); ?> - <?php echo htmlspecialchars($property['city']); ?></h3>
                             <p>$<?php echo htmlspecialchars($property['rent']); ?>/month</p>
                             <p><?php echo htmlspecialchars($property['street']); ?></p>
-                            <a href="view.php?propertyNo=<?php echo urlencode($property['propertyNo']); ?>">View Details</a>
+                            <a href="property.php?propertyNo=<?php echo urlencode($property['propertyNo']); ?>">View Details</a>
                             <?php if ($userRole === 'property_owner' && $myOwnerNo && $property['ownerNo'] === $myOwnerNo): ?>
                                 <a href="edit-property.php?propertyNo=<?php echo urlencode($property['propertyNo']); ?>" class="btn-edit-property">Edit</a>
                                 <form action="delete-property.php" method="post" style="display:inline;">
