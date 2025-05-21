@@ -59,7 +59,7 @@
                             <h3><?php echo htmlspecialchars($property['pType']); ?> - <?php echo htmlspecialchars($property['city']); ?></h3>
                             <p>$<?php echo htmlspecialchars($property['rent']); ?>/month</p>
                             <p><?php echo htmlspecialchars($property['street']); ?></p>
-                            <a href="view.php?propertyNo=<?php echo urlencode($property['propertyNo']); ?>">View Details</a>
+                            <a href="view.php?id=<?php echo urlencode($property['propertyNo']); ?>">View Details</a>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>

@@ -120,6 +120,20 @@ $userRole = $_SESSION['user_role'];
 
     const propertyId = new URLSearchParams(window.location.search).get('id');
 
+    // Proper fetch with fallback handling
+    fetch(`../php/get_image.php?property_id=${propertyId}`)
+        .then(res => res.json())
+        .then(data => {
+            images = data;
+            updateCarousel(); // this will automatically show fallback if empty
+        })
+        .catch(error => {
+            console.error("Image fetch failed:", error);
+            document.getElementById('carousel-image').src = "../img/no-image-available.png";
+            document.getElementById('carousel-image').alt = "No Image Available";
+        });
+
+    // Update image path to use ../img/ instead of ../uploads/
     function updateCarousel() {
         if (images.length === 0) {
             document.getElementById('carousel-image').src = "../img/no-image-available.png";
@@ -127,7 +141,7 @@ $userRole = $_SESSION['user_role'];
             return;
         }
         const img = document.getElementById('carousel-image');
-        img.src = `../uploads/${images[currentImageIndex]}`;
+        img.src = `../img/${images[currentImageIndex]}`;
         img.alt = "Property Image";
     }
 
@@ -140,20 +154,6 @@ $userRole = $_SESSION['user_role'];
         currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
         updateCarousel();
     }
-
-    // Proper fetch with fallback handling
-    fetch(`../php/get-images.php?property_id=${propertyId}`)
-        .then(res => res.json())
-        .then(data => {
-            images = data;
-            updateCarousel(); // this will automatically show fallback if empty
-        })
-        .catch(error => {
-            console.error("Image fetch failed:", error);
-            document.getElementById('carousel-image').src = "../img/no-image-available.png";
-            document.getElementById('carousel-image').alt = "No Image Available";
-        });
-
 
     // Handle viewing form
     document.getElementById('viewing-form').addEventListener('submit', function (e) {
