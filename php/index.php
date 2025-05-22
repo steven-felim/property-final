@@ -46,7 +46,7 @@
                         exit();
                     }
                 } else {
-                    $error = "User or email is incorrect.";
+                    $error = "Email or password is incorrect.";
                 }
                 $stmt->close();
             } else {
