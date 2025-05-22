@@ -52,7 +52,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Your Profile - Property Renting Website</title>
-    <link rel="stylesheet" href="../css/styles.css">
+    <link rel="stylesheet" href="../css/styles.css?v=<?php echo time(); ?>">
 </head>
 <body>
     <header>
@@ -120,11 +120,12 @@
         </div>
     </section>
 
-    <div class="container" style="text-align: center; margin-top: 20px;">
-        <form action="index.php" method="post">
+    <div class="container" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
+        <form action="index.php" method="post" style="display: inline;">
             <input type="hidden" name="logout" value="1">
             <button type="submit" class="btn-logout">Log Out</button>
         </form>
+        <a href="edit-profile.php" class="btn-edit-profile">Edit Profile</a>
     </div>
     <?php
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
@@ -138,7 +139,6 @@
     <footer>
         <div class="container">
             <p>&copy; 2025 HBProperty | All Rights Reserved</p>
-            
         </div>
     </footer>
 </body>
