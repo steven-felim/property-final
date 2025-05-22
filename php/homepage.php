@@ -106,23 +106,23 @@ require_once './db_connection.php';
     </script>
 
     <script>
-        function searchProperty() {
-            const keyword = document.getElementById('searchInput').value;
-            if (keyword.trim() === '') {
-                document.getElementById('searchResults').innerHTML = '';
-                return;
-            }
+function searchProperty() {
+    const keyword = document.getElementById('searchInput').value;
+    if (keyword.trim() === '') {
+        document.getElementById('searchResults').innerHTML = '';
+        return;
+    }
 
-            const xhr = new XMLHttpRequest();
-            xhr.open("GET", "search.php?query=" + encodeURIComponent(keyword), true);
-            xhr.onload = function () {
-                if (xhr.status === 200) {
-                    document.getElementById('searchResults').innerHTML = xhr.responseText;
-                }
-            };
-            xhr.send();
+    const xhr = new XMLHttpRequest();
+    xhr.open("GET", "search.php?query=" + encodeURIComponent(keyword), true);
+    xhr.onload = function () {
+        if (xhr.status === 200) {
+            document.getElementById('searchResults').innerHTML = xhr.responseText;
         }
-    </script>
+    };
+    xhr.send();
+}
+</script>
 
 </body>
 
