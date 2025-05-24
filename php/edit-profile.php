@@ -20,8 +20,23 @@ if (!isset($tableMap[$userRole])) {
     die("Invalid role.");
 }
 
+$table = $tableMap[$userRole];
+
 // Fetch current user data
-$stmt = $conn->prepare("SELECT fname, lname, email FROM {$tableMap[$userRole]} WHERE email = ?");
+switch ($userRole) {
+    case 'client':
+        $stmt = $conn->prepare("SELECT fname, lname, email, telNo, prefType, maxRent FROM $table WHERE email = ?");
+        break;
+    case 'property_owner':
+        $stmt = $conn->prepare("SELECT fname, lname, email, street, city, postcode, telNo FROM $table WHERE email = ?");
+        break;
+    case 'staff':
+        $stmt = $conn->prepare("SELECT fname, lname, email, sPosition, sex, DOB, salary FROM $table WHERE email = ?");
+        break;
+    default:
+        die("Invalid role.");
+}
+
 $stmt->bind_param("s", $userEmail);
 $stmt->execute();
 $result = $stmt->get_result();
@@ -37,8 +52,34 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $fname = $_POST['fname'];
     $lname = $_POST['lname'];
     $newEmail = $_POST['email'];
-    $stmt = $conn->prepare("UPDATE {$tableMap[$userRole]} SET fname=?, lname=?, email=? WHERE email=?");
-    $stmt->bind_param("ssss", $fname, $lname, $newEmail, $userEmail);
+
+    switch ($userRole) {
+        case 'client':
+            $telNo = $_POST['telNo'];
+            $prefType = $_POST['prefType'];
+            $maxRent = $_POST['maxRent'];
+            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, email=?, telNo=?, prefType=?, maxRent=? WHERE email=?");
+            $stmt->bind_param("sssssis", $fname, $lname, $newEmail, $telNo, $prefType, $maxRent, $userEmail);
+            break;
+
+        case 'property_owner':
+            $street = $_POST['street'];
+            $city = $_POST['city'];
+            $postcode = $_POST['postcode'];
+            $telNo = $_POST['telNo'];
+            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, email=?, street=?, city=?, postcode=?, telNo=? WHERE email=?");
+            $stmt->bind_param("ssssssss", $fname, $lname, $newEmail, $street, $city, $postcode, $telNo, $userEmail);
+            break;
+
+        case 'staff':
+            $sPosition = $_POST['sPosition'];
+            $sex = $_POST['sex'];
+            $DOB = $_POST['DOB'];
+            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, email=?, sPosition=?, sex=?, DOB=? WHERE email=?");
+            $stmt->bind_param("sssssss", $fname, $lname, $newEmail, $sPosition, $sex, $DOB, $userEmail);
+            break;
+    }
+
     if ($stmt->execute()) {
         $_SESSION['user_email'] = $newEmail;
         header("Location: profile.php");
@@ -50,6 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $conn->close();
 ?>
+
 <!DOCTYPE html>
 <html lang="en">
 <head>
@@ -77,6 +119,62 @@ $conn->close();
                 <label for="email">Email</label>
                 <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
             </div>
+            <?php if ($userRole === 'client'): ?>
+                <div class="form-group">
+                    <label for="telNo">Telephone Number</label>
+                    <input type="text" id="telNo" name="telNo" value="<?php echo htmlspecialchars($user['telNo']); ?>" maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label for="prefType">Preferred Type</label>
+                    <input type="text" id="prefType" name="prefType" value="<?php echo htmlspecialchars($user['prefType']); ?>" maxlength="14">
+                </div>
+                <div class="form-group">
+                    <label for="maxRent">Max Rent</label>
+                    <input type="number" id="maxRent" name="maxRent" value="<?php echo htmlspecialchars($user['maxRent']); ?>" min="0">
+                </div>
+
+            <?php elseif ($userRole === 'property_owner'): ?>
+                <div class="form-group">
+                    <label for="street">Street</label>
+                    <input type="text" id="street" name="street" value="<?php echo htmlspecialchars($user['street']); ?>" maxlength="25">
+                </div>
+                <div class="form-group">
+                    <label for="city">City</label>
+                    <input type="text" id="city" name="city" value="<?php echo htmlspecialchars($user['city']); ?>" maxlength="20">
+                </div>
+                <div class="form-group">
+                    <label for="postcode">Postcode</label>
+                    <input type="text" id="postcode" name="postcode" value="<?php echo htmlspecialchars($user['postcode']); ?>" maxlength="7">
+                </div>
+                <div class="form-group">
+                    <label for="telNo">Telephone Number</label>
+                    <input type="text" id="telNo" name="telNo" value="<?php echo htmlspecialchars($user['telNo']); ?>" maxlength="14">
+                </div>
+
+            <?php elseif ($userRole === 'staff'): ?>
+                <div class="form-group">
+                    <label for="sPosition">Staff Position</label>
+                    <select id="sPosition" name="sPosition" required>
+                        <?php foreach (['Admin', 'Manager', 'Supervisor', 'Assistant'] as $pos): ?>
+                            <option value="<?php echo $pos; ?>" <?php echo ($user['sPosition'] === $pos) ? 'selected' : ''; ?>><?php echo $pos; ?></option>
+                        <?php endforeach; ?>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label>Sex</label>
+                    <label><input type="radio" name="sex" value="M" <?php echo ($user['sex'] === 'M') ? 'checked' : ''; ?>> Male</label>
+                    <label><input type="radio" name="sex" value="F" <?php echo ($user['sex'] === 'F') ? 'checked' : ''; ?>> Female</label>
+                </div>
+                <div class="form-group">
+                    <label for="DOB">Date of Birth</label>
+                    <input type="date" id="DOB" name="DOB" value="<?php echo htmlspecialchars($user['DOB']); ?>">
+                </div>
+                <div class="form-group">
+                    <label for="salary">Salary</label>
+                    <input type="text" id="salary" value="<?php echo htmlspecialchars($user['salary']); ?>" readonly>
+                </div>
+            <?php endif; ?>
+
             <button type="submit" class="btn-add-property">Save Changes</button>
             <a href="profile.php" class="btn-cancel" style="margin-left: 10px;">Cancel</a>
         </form>
