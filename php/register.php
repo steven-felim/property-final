@@ -12,6 +12,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $firstName = trim($_POST['fname']);
     $lastName = trim($_POST['lname']);
     $email = trim($_POST['email']);
+    $telNo = trim($_POST['telNo']);
     $password = $_POST['password'];
     $role = $_POST['role'];
 
@@ -83,9 +84,20 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
 
             $newId = generateRoleId($conn, $role, $tableName, $idColumn);
 
-            $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password) VALUES (?, ?, ?, ?, ?)";
-            $stmt = $conn->prepare($sql);
-            $stmt->bind_param("sssss", $newId, $firstName, $lastName, $email, $hashedPassword);
+            if ($role === 'client') {
+                $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password, telNo) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssssss", $newId, $firstName, $lastName, $email, $hashedPassword, $telNo);
+            } else if ($role === 'property_owner') {
+                $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password, telNo) VALUES (?, ?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("ssssss", $newId, $firstName, $lastName, $email, $hashedPassword, $telNo);
+            } else {
+                // staff (jika ada)
+                $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password) VALUES (?, ?, ?, ?, ?)";
+                $stmt = $conn->prepare($sql);
+                $stmt->bind_param("sssss", $newId, $firstName, $lastName, $email, $hashedPassword);
+            }
 
             if ($stmt->execute()) {
                 $_SESSION['user_email'] = $email;
@@ -134,6 +146,10 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 <div class="form-group">
                     <label for="password">Password</label>
                     <input type="password" id="password" name="password" required>
+                </div>
+                <div class="form-group">
+                    <label for="telNo">Phone Number</label>
+                    <input type="text" id="telNo" name="telNo" required>
                 </div>
                 <div class="form-group">
                     <label for="role">Sign up as</label>

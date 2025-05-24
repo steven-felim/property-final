@@ -10,6 +10,40 @@
     $userRole = $_SESSION['user_role'];
 
     require_once './db_connection.php';
+
+    // Fetch clientNo for the logged-in user-------> kalo tambah tabel ini buat rented properties client
+    $clientNo = null;
+    if ($userRole === 'client') {
+        $clientNoQuery = "SELECT clientNo FROM CClient WHERE email = ?";
+        $stmtClient = $conn->prepare($clientNoQuery);
+        $stmtClient->bind_param("s", $userEmail);
+        $stmtClient->execute();
+        $resultClient = $stmtClient->get_result();
+        $clientRow = $resultClient->fetch_assoc();
+        if ($clientRow) {
+            $clientNo = $clientRow['clientNo'];
+        }
+        $stmtClient->close();
+    }
+
+    // Fetch viewed properties if user is a client  -------> kalo tambah tabel ini buat rented properties client
+    $rentedProperties = [];
+    if ($userRole === 'client' && $clientNo) {
+        $rentQuery = "
+            SELECT p.street, p.city, p.pType
+            FROM viewing v
+            JOIN propertyforrent p ON v.propertyNo = p.propertyNo
+            WHERE v.clientNo = ?
+        ";
+        $stmtRent = $conn->prepare($rentQuery);
+        $stmtRent->bind_param("s", $clientNo);
+        $stmtRent->execute();
+        $resultRent = $stmtRent->get_result();
+        while ($row = $resultRent->fetch_assoc()) {
+            $rentedProperties[] = $row;
+        }
+        $stmtRent->close();
+    }
 ?>
 
 <!DOCTYPE html>
@@ -71,10 +105,17 @@
                 $conn->close();
             ?></p>
             <p><strong>Email:</strong> <?php echo $userEmail; ?></p>
-            <p><strong>Rented Properties:</strong></p>
+            <p><strong>Viewed Properties:</strong></p>
             <ul>
-                <li>Luxury Villa - $2,500/month</li>
-                <li>Modern Apartment - $1,800/month</li>
+                <?php if (!empty($rentedProperties)): ?>
+                    <?php foreach ($rentedProperties as $property): ?>
+                        <li>
+                            <?php echo htmlspecialchars($property['street']) . ", " . htmlspecialchars($property['city']) . " (" . htmlspecialchars($property['pType']) . ")"; ?>
+                        </li>
+                    <?php endforeach; ?>
+                <?php else: ?>
+                    <li>No viewed properties found.</li>
+                <?php endif; ?>
             </ul>
         </div>
     </section>

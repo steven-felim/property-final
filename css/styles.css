@@ -176,7 +176,13 @@ header nav ul li a:hover {
     gap: 20px;
     flex-wrap: wrap; /* Optional: helps for smaller screens */
 }
-
+/* search bar */
+.search-form {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin: 10px 20px; /* Beri jarak dari logo dan nav */
+}
 /* Footer */
 footer {
     position: fixed; 

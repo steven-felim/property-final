@@ -44,11 +44,9 @@
                         $_SESSION['user_role'] = $role;
                         header("Location: homepage.php");
                         exit();
-                    } else {
-                        $error = "Incorrect password.";
                     }
                 } else {
-                    $error = "No account found with that email.";
+                    $error = "Email or password is incorrect.";
                 }
                 $stmt->close();
             } else {
