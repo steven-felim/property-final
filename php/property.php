@@ -8,6 +8,59 @@ if (!isset($_SESSION['user_email'])) {
 
 $userEmail = $_SESSION['user_email'];
 $userRole = $_SESSION['user_role'];
+require_once './db_connection.php';
+
+$rentMsg = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $userRole === 'client') {
+    $propertyId = $_POST['property_id'];
+
+    // Ambil clientNo
+    $stmt = $conn->prepare("SELECT clientNo FROM CClient WHERE eMail = ?");
+    $stmt->bind_param("s", $userEmail);
+    $stmt->execute();
+    $stmt->bind_result($clientNo);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Ambil branchNo dari property
+    $stmt = $conn->prepare("SELECT branchNo FROM PropertyForRent WHERE propertyNo = ?");
+    $stmt->bind_param("s", $propertyId);
+    $stmt->execute();
+    $stmt->bind_result($branchNo);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Ambil staffNo random (atau bisa diatur staff tertentu, misal staff pertama di branch)
+    $stmt = $conn->prepare("SELECT staffNo FROM Staff WHERE branchNo = ? LIMIT 1");
+    $stmt->bind_param("s", $branchNo);
+    $stmt->execute();
+    $stmt->bind_result($staffNo);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Cek apakah client sudah terdaftar di registration
+    $stmt = $conn->prepare("SELECT clientNo FROM Registration WHERE clientNo = ?");
+    $stmt->bind_param("s", $clientNo);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows == 0) {
+        $stmt->close();
+        // Insert ke registration
+        $dateJoined = date('Y-m-d');
+        $stmt = $conn->prepare("INSERT INTO Registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
+        if ($stmt->execute()) {
+            $rentMsg = "Successfully rented! You are now registered to branch and staff.";
+        } else {
+            $rentMsg = "Failed to register rental.";
+        }
+        $stmt->close();
+    } else {
+        $rentMsg = "You are already registered.";
+        $stmt->close();
+    }
+}
 ?>
 
 <!DOCTYPE html>
@@ -67,7 +120,14 @@ $userRole = $_SESSION['user_role'];
                 <p><strong>Address:</strong> <span id="property-address"></span></p>
                 <p><strong>Rooms:</strong> <span id="property-rooms"></span></p>
                 <p><strong>Rent:</strong> $<span id="property-rent"></span>/month</p>
-                <button style="margin-top: 20px;" onclick="rentProperty()">Rent This Property</button>
+                <?php if ($userRole === 'client'): ?>
+                    <form method="post" style="margin-top: 20px;">
+                        <input type="hidden" name="rent_property" value="1">
+                        <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
+                        <button type="submit">Rent This Property</button>
+                    </form>
+                    <?php if (isset($rentMsg)) echo "<p style='color:green;'>$rentMsg</p>"; ?>
+                <?php endif; ?>
             </div>
         </div>
 
