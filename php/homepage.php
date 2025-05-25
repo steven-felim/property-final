@@ -19,18 +19,19 @@ if (isset($_GET['search_query'])) {
     $result = $stmt->get_result();
 
     if ($result->num_rows > 0) {
-        echo '<ul style="background:#fff;border:1px solid #ccc;list-style:none;padding:10px;">';
+        echo '<div class="search-result-list">';
         while ($row = $result->fetch_assoc()) {
-            echo '<li style="margin-bottom:8px;">
+            echo '<div class="search-result-item">
                     <a href="property_detail.php?id=' . htmlspecialchars($row['propertyNo']) . '">
-                        ' . htmlspecialchars($row['street']) . ', ' . htmlspecialchars($row['city']) . 
-                        ' (' . htmlspecialchars($row['pType']) . ') - Rp' . htmlspecialchars($row['rent']) . '
+                        <div class="result-title">' . htmlspecialchars($row['street']) . ', ' . htmlspecialchars($row['city']) . '</div>
+                        <div class="result-type">' . htmlspecialchars($row['pType']) . '</div>
+                        <div class="result-rent">Rp' . number_format($row['rent'], 0, ',', '.') . '</div>
                     </a>
-                  </li>';
+                  </div>';
         }
-        echo '</ul>';
+        echo '</div>';
     } else {
-        echo '<p style="background:#fff;border:1px solid #ccc;padding:10px;">Tidak ada properti ditemukan.</p>';
+        echo '<div class="search-result-empty">Tidak ada properti ditemukan.</div>';
     }
 
     $stmt->close();
