@@ -155,15 +155,15 @@ $conn->close();
                 <div class="form-group">
                     <label for="sPosition">Staff Position</label>
                     <select id="sPosition" name="sPosition" required>
-                        <?php foreach (['Admin', 'Manager', 'Supervisor', 'Assistant'] as $pos): ?>
-                            <option value="<?php echo $pos; ?>" <?php echo ($user['sPosition'] === $pos) ? 'selected' : ''; ?>><?php echo $pos; ?></option>
-                        <?php endforeach; ?>
+                        <option value="<?php echo htmlspecialchars($user['sPosition']); ?>" selected>
+                            <?php echo htmlspecialchars($user['sPosition']); ?>
+                        </option>
                     </select>
                 </div>
                 <div class="form-group">
                     <label>Sex</label>
-                    <label><input type="radio" name="sex" value="M" <?php echo ($user['sex'] === 'M') ? 'checked' : ''; ?>> Male</label>
-                    <label><input type="radio" name="sex" value="F" <?php echo ($user['sex'] === 'F') ? 'checked' : ''; ?>> Female</label>
+                    <input type="radio" name="sex" value="M" <?php echo ($user['sex'] === 'M') ? 'checked' : ''; ?>> <label for="sexM" style="display:inline;">Male</label>
+                    <input type="radio" name="sex" value="F" <?php echo ($user['sex'] === 'F') ? 'checked' : ''; ?>> <label for="sexF" style="display:inline;">Female</label>
                 </div>
                 <div class="form-group">
                     <label for="DOB">Date of Birth</label>
@@ -175,8 +175,8 @@ $conn->close();
                 </div>
             <?php endif; ?>
 
-            <button type="submit" class="btn-add-property">Save Changes</button>
-            <a href="profile.php" class="btn-cancel" style="margin-left: 10px;">Cancel</a>
+            <button type="submit">Save Changes</button>
+            <button type="button" style="margin-left: 10px;" onclick="window.location.href='profile.php'">Cancel</button>
         </form>
     </div>
 </body>

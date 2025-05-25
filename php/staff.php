@@ -2,10 +2,13 @@
 session_start();
 require_once './db_connection.php';
 // Cek login
-if (!isset($_SESSION['user_email']) || $_SESSION['user_role'] !== 'staff') {
+if (!isset($_SESSION['user_email']) && $_SESSION['user_role'] == 'staff') {
     header("Location: index.php");
     exit();
 }
+
+$userEmail = $_SESSION['user_email'];
+$userRole = $_SESSION['user_role'];
 
 // Fetch all properties
 $properties = [];
@@ -79,16 +82,17 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_property'])) {
             </div>
             <nav>
                 <ul>
-                    <li><a href="homepage.php">Home</a></li>
-                    <li><a href="staff.php">Staff Dashboard</a></li>
-                    <li><a href="edit-profile.php">Edit Profile</a></li>
-                    <li>
-                        <form action="index.php" method="post" style="display:inline;">
-                            <input type="hidden" name="logout" value="1" />
-                            <button type="submit" class="btn-logout"
-                                style="background:none;border:none;color:#007bff;cursor:pointer;">Log Out</button>
-                        </form>
-                    </li>
+                    <?php if($userRole === 'staff'): ?>
+                        <li><a href="staff.php">Home</a></li>
+                        <li><a href=#>Staff Dashboard</a></li>
+                    <?php else: ?>
+                        <li><a href="homepage.php">Home</a></li>
+                    <?php endif; ?>
+                    <li><a href="properties.php">Properties</a></li>
+                    <?php if (in_array($userRole, ['staff', 'property_owner'])): ?>
+                        <li><a href="viewing.php">Viewing</a></li>
+                    <?php endif; ?>
+                    <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
         </div>
@@ -119,7 +123,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_property'])) {
                         <td><?php echo htmlspecialchars($p['street']); ?></td>
                         <td><?php echo htmlspecialchars($p['city']); ?></td>
                         <td><?php echo htmlspecialchars($p['pType']); ?></td>
-                        <td>Rp<?php echo number_format($p['rent'], 0, ',', '.'); ?></td>
+                        <td>$<?php echo number_format($p['rent'], 0, ',', '.'); ?></td>
                         <td><?php echo htmlspecialchars($p['ownerFName'] . ' ' . $p['ownerLName']); ?></td>
                         <td>
                             <form method="post" style="display:inline;">
@@ -162,11 +166,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_property'])) {
                 </label>
                 <button type="submit">Register</button>
             </form>
-        </section>
-
-        <!-- 5. Edit Profile Staff -->
-        <section>
-            <a href="edit-profile.php" class="btn-edit-profile">Edit My Profile</a>
         </section>
     </div>
 

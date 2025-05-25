@@ -130,7 +130,12 @@ if ($userRole === 'property_owner' && $ownerNo) {
             </div>
             <nav>
                 <ul>
-                    <li><a href="homepage.php">Home</a></li>
+                    <?php if($userRole === 'staff'): ?>
+                        <li><a href="staff.php">Home</a></li>
+                        <li><a href=#>Staff Dashboard</a></li>
+                    <?php else: ?>
+                        <li><a href="homepage.php">Home</a></li>
+                    <?php endif; ?>
                     <li><a href="properties.php">Properties</a></li>
                     <?php if (in_array($userRole, ['staff', 'property_owner'])): ?>
                         <li><a href="viewing.php">Viewing</a></li>
@@ -204,9 +209,9 @@ if ($userRole === 'property_owner' && $ownerNo) {
     <div class="container" style="display: flex; justify-content: center; align-items: center; margin-top: 20px; gap: 10px;">
         <form action="index.php" method="post" style="display: inline;">
             <input type="hidden" name="logout" value="1" />
-            <button type="submit" class="btn-logout">Log Out</button>
+            <button type="submit">Log Out</button>
         </form>
-        <a href="edit-profile.php" class="btn-edit-profile">Edit Profile</a>
+        <button type="button" style="margin-left: 10px;" onclick="window.location.href='edit-profile.php'">Edit Profile</button>
     </div>
 
     <?php
