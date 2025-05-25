@@ -1,6 +1,44 @@
 <?php
 session_start();
+require_once './db_connection.php';
 
+// Tangani AJAX Search
+if (isset($_GET['search_query'])) {
+    $query = trim($_GET['search_query']);
+    if ($query === '') {
+        echo '';
+        exit;
+    }
+
+    $sql = "SELECT propertyNo, street, city, pType, rent FROM propertyforrent 
+            WHERE street LIKE ? OR city LIKE ? OR pType LIKE ?";
+    $like = '%' . $query . '%';
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("sss", $like, $like, $like);
+    $stmt->execute();
+    $result = $stmt->get_result();
+
+    if ($result->num_rows > 0) {
+        echo '<ul style="background:#fff;border:1px solid #ccc;list-style:none;padding:10px;">';
+        while ($row = $result->fetch_assoc()) {
+            echo '<li style="margin-bottom:8px;">
+                    <a href="property_detail.php?id=' . htmlspecialchars($row['propertyNo']) . '">
+                        ' . htmlspecialchars($row['street']) . ', ' . htmlspecialchars($row['city']) . 
+                        ' (' . htmlspecialchars($row['pType']) . ') - Rp' . htmlspecialchars($row['rent']) . '
+                    </a>
+                  </li>';
+        }
+        echo '</ul>';
+    } else {
+        echo '<p style="background:#fff;border:1px solid #ccc;padding:10px;">Tidak ada properti ditemukan.</p>';
+    }
+
+    $stmt->close();
+    $conn->close();
+    exit;
+}
+
+// Cek login
 if (!isset($_SESSION['user_email'])) {
     header("Location: index.php");
     exit();
@@ -9,8 +47,6 @@ if (!isset($_SESSION['user_email'])) {
 $userEmail = $_SESSION['user_email'];
 $userName = $_SESSION['user_name'];
 $userRole = $_SESSION['user_role'];
-
-require_once './db_connection.php';
 ?>
 
 <!DOCTYPE html>
@@ -19,7 +55,6 @@ require_once './db_connection.php';
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta http-equiv="X-UA-Compatible" content="ie=edge">
     <title>Property Renting Website</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
@@ -33,24 +68,25 @@ require_once './db_connection.php';
             </div>
 
             <!-- Search Form -->
-            <form class="search-form" action="search.php" method="get">
-                <input type="text" name="query" placeholder="Cari properti...">
+            <form class="search-form" onsubmit="return false;">
+                <input type="text" id="searchInput" name="query" placeholder="Search property..." autocomplete="off" onkeyup="searchProperty()">
             </form>
+            <div id="searchResults" class="search-results"></div>
+
             <!-- Navigation -->
             <nav>
                 <ul>
                     <li><a href="homepage.php">Home</a></li>
                     <li><a href="properties.php">Properties</a></li>
-                    <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
+                    <?php if (in_array($userRole, ['staff', 'property_owner'])): ?>
                         <li><a href="viewing.php">Viewing</a></li>
                     <?php endif; ?>
                     <li><a href="profile.php">Profile</a></li>
                 </ul>
             </nav>
-            <?php if (
-                isset($_SESSION['user_email']) && isset($_SESSION['user_name']) && isset($_SERVER['HTTP_REFERER']) &&
-                (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)
-            ): ?>
+
+            <?php if (isset($_SERVER['HTTP_REFERER']) &&
+                      (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)) : ?>
                 <script>
                     window.onload = function () {
                         alert("Welcome, <?php echo htmlspecialchars($userName); ?> (<?php echo htmlspecialchars($userRole); ?>)");
@@ -72,8 +108,7 @@ require_once './db_connection.php';
     <section class="properties">
         <div class="container">
             <h2>Featured Properties</h2>
-            <div id="property-list" class="property-list" style="margin-bottom: 100px;">
-            </div>
+            <div id="property-list" class="property-list" style="margin-bottom: 100px;"></div>
         </div>
     </section>
 
@@ -84,8 +119,8 @@ require_once './db_connection.php';
         </div>
     </footer>
 
+    <!-- JavaScript for property listing -->
     <script>
-        // Fetch the properties data from the PHP script
         fetch('../php/fetch-properties.php')
             .then(response => response.json())
             .then(data => {
@@ -105,25 +140,25 @@ require_once './db_connection.php';
             .catch(error => console.log('Error fetching properties:', error));
     </script>
 
+    <!-- AJAX Search Script -->
     <script>
-function searchProperty() {
-    const keyword = document.getElementById('searchInput').value;
-    if (keyword.trim() === '') {
-        document.getElementById('searchResults').innerHTML = '';
-        return;
-    }
+        function searchProperty() {
+            const keyword = document.getElementById('searchInput').value;
+            if (keyword.trim() === '') {
+                document.getElementById('searchResults').innerHTML = '';
+                return;
+            }
 
-    const xhr = new XMLHttpRequest();
-    xhr.open("GET", "search.php?query=" + encodeURIComponent(keyword), true);
-    xhr.onload = function () {
-        if (xhr.status === 200) {
-            document.getElementById('searchResults').innerHTML = xhr.responseText;
+            const xhr = new XMLHttpRequest();
+            xhr.open("GET", "homepage.php?search_query=" + encodeURIComponent(keyword), true);
+            xhr.onload = function () {
+                if (xhr.status === 200) {
+                    document.getElementById('searchResults').innerHTML = xhr.responseText;
+                }
+            };
+            xhr.send();
         }
-    };
-    xhr.send();
-}
-</script>
-
+    </script>
 </body>
 
 </html>
