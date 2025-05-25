@@ -205,7 +205,7 @@ header nav ul li a:hover {
     left: 0;
     right: 0;
     background: #fff;
-    border: 1px solid #ccc;
+    border: 0px solid #ccc;
     border-radius: 8px;
     box-shadow: 0 4px 16px rgba(0, 0, 0, 0.08);
     margin-top: 5px;
