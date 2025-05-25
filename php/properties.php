@@ -23,11 +23,32 @@
 
     // Fetch all properties with their images and ownerNo
     $properties = [];
-    $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image FROM PropertyForRent p LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo ORDER BY p.propertyNo DESC";
-    $result = $conn->query($sql);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $properties[] = $row;
+    if ($userRole === 'property_owner' && $myOwnerNo) {
+        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
+                FROM PropertyForRent p 
+                LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo 
+                WHERE p.ownerNo = ? 
+                ORDER BY p.propertyNo DESC";
+        $stmt = $conn->prepare($sql);
+        $stmt->bind_param("s", $myOwnerNo);
+        $stmt->execute();
+        $result = $stmt->get_result();
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $properties[] = $row;
+            }
+        }
+        $stmt->close();
+    } else {
+        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
+                FROM PropertyForRent p 
+                LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo 
+                ORDER BY p.propertyNo DESC";
+        $result = $conn->query($sql);
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $properties[] = $row;
+            }
         }
     }
     // Do not close $conn yet, as we may need it for other actions
@@ -81,14 +102,16 @@
                             <h3><?php echo htmlspecialchars($property['pType']); ?> - <?php echo htmlspecialchars($property['city']); ?></h3>
                             <p>$<?php echo htmlspecialchars($property['rent']); ?>/month</p>
                             <p><?php echo htmlspecialchars($property['street']); ?></p>
-                            <a href="property.php?id=<?php echo urlencode($property['propertyNo']); ?>">View Details</a>
-                            <?php if ($userRole === 'property_owner' && $myOwnerNo && $property['ownerNo'] === $myOwnerNo): ?>
-                                <a href="edit-property.php?propertyNo=<?php echo urlencode($property['propertyNo']); ?>" class="btn-edit-property">Edit</a>
-                                <form action="delete-property.php" method="post" style="display:inline;">
-                                    <input type="hidden" name="propertyNo" value="<?php echo htmlspecialchars($property['propertyNo']); ?>">
-                                    <button type="submit" class="btn-delete-property" onclick="return confirm('Are you sure you want to delete this property?');">Delete</button>
-                                </form>
-                            <?php endif; ?>
+                            <div class="property-actions">
+                                <a href="property.php?id=<?php echo urlencode($property['propertyNo']); ?>" class="btn-view-details">View Details</a>
+                                <?php if ($userRole === 'property_owner' && $myOwnerNo && $property['ownerNo'] === $myOwnerNo): ?>
+                                    <a href="edit-property.php?propertyNo=<?php echo urlencode($property['propertyNo']); ?>" class="btn-edit-property">Edit</a>
+                                    <form action="delete-property.php" method="post" style="display:inline;">
+                                        <input type="hidden" name="propertyNo" value="<?php echo htmlspecialchars($property['propertyNo']); ?>">
+                                        <button type="submit" class="btn-delete-property" onclick="return confirm('Are you sure you want to delete this property?');">Delete</button>
+                                    </form>
+                                <?php endif; ?>
+                            </div>
                         </div>
                     <?php endforeach; ?>
                 <?php else: ?>
