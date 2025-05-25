@@ -7,8 +7,6 @@ if (!isset($_SESSION['user_email']) || $_SESSION['user_role'] !== 'staff') {
     exit();
 }
 
-
-
 // Fetch all properties
 $properties = [];
 $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, po.fName AS ownerFName, po.lName AS ownerLName
