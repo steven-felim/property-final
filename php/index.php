@@ -42,7 +42,11 @@
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['user_email'] = $email;
                         $_SESSION['user_role'] = $role;
-                        header("Location: homepage.php");
+                        if ($role === 'staff') {
+                            header("Location: staff.php");
+                        } else {
+                            header("Location: homepage.php");
+                        }
                         exit();
                     }
                 } else {

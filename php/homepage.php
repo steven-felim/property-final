@@ -1,6 +1,15 @@
 <?php
 session_start();
 require_once './db_connection.php';
+if (!isset($_SESSION['user_email'])) {
+    header("Location: index.php");
+    exit();
+}
+
+if (isset($_SESSION['user_role']) && $_SESSION['user_role'] === 'staff') {
+    header("Location: staff.php");
+    exit();
+}
 
 // Tangani AJAX Search
 if (isset($_GET['search_query'])) {
@@ -25,7 +34,7 @@ if (isset($_GET['search_query'])) {
                     <a href="property_detail.php?id=' . htmlspecialchars($row['propertyNo']) . '">
                         <div class="result-title">' . htmlspecialchars($row['street']) . ', ' . htmlspecialchars($row['city']) . '</div>
                         <div class="result-type">' . htmlspecialchars($row['pType']) . '</div>
-                        <div class="result-rent">Rp' . number_format($row['rent'], 0, ',', '.') . '</div>
+                        <div class="result-rent">$' . number_format($row['rent'], 0, ',', '.') . '</div>
                     </a>
                   </div>';
         }
@@ -87,7 +96,7 @@ $userRole = $_SESSION['user_role'];
             </nav>
 
             <?php if (isset($_SERVER['HTTP_REFERER']) &&
-                      (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)) : ?>
+                (strpos($_SERVER['HTTP_REFERER'], 'register.php') !== false || strpos($_SERVER['HTTP_REFERER'], 'index.php') !== false)) : ?>
                 <script>
                     window.onload = function () {
                         alert("Welcome, <?php echo htmlspecialchars($userName); ?> (<?php echo htmlspecialchars($userRole); ?>)");

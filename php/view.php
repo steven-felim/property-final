@@ -26,7 +26,12 @@
             </div>
             <nav>
                 <ul>
-                    <li><a href="homepage.php">Home</a></li>
+                    <?php if($userRole === 'staff'): ?>
+                        <li><a href="staff.php">Home</a></li>
+                        <li><a href=#>Staff Dashboard</a></li>
+                    <?php else: ?>
+                        <li><a href="homepage.php">Home</a></li>
+                    <?php endif; ?>
                     <li><a href="properties.php">Properties</a></li>
                     <?php if (isset($_SESSION['user_role']) && in_array($_SESSION['user_role'], ['staff', 'property_owner'])): ?>
                         <li><a href="viewing.php">Viewing</a></li>
