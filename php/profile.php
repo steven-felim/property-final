@@ -169,7 +169,7 @@ if ($userRole === 'property_owner' && $ownerNo) {
             <?php if ($userRole === 'client'): ?>
                 <p><strong>Phone:</strong> <?php echo htmlspecialchars($user['telNo']); ?></p>
                 <p><strong>Preferred Type:</strong> <?php echo htmlspecialchars($user['prefType']); ?></p>
-                <p><strong>Max Rent:</strong> $<?php echo htmlspecialchars($user['maxRent']); ?></p>
+                <p><strong>Max Rent:</strong> Rp. <?php echo htmlspecialchars($user['maxRent']); ?></p>
                 <?php if (!empty($regInfo)): ?>
                     <p><strong>Registered Branch:</strong> <?php echo htmlspecialchars($regInfo['branchStreet'] . ', ' . $regInfo['branchCity']); ?></p>
                     <p><strong>Assigned Staff:</strong> <?php echo htmlspecialchars($regInfo['staffFName'] . ' ' . $regInfo['staffLName']); ?></p>
