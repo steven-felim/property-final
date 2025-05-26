@@ -233,6 +233,7 @@ if ($userRole === 'property_owner' && $ownerNo) {
             <button type="submit">Log Out</button>
         </form>
         <button type="button" style="margin-left: 10px;" onclick="window.location.href='edit-profile.php'">Edit Profile</button>
+        <button type="button" style="margin-left: 10px;" onclick="window.location.href='change-password.php'">Change Password</button>
     </div>
 
     <?php
