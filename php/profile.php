@@ -235,8 +235,6 @@ if ($userRole === 'property_owner' && $ownerNo) {
     </div>
 
     <?php
-    // Logout handling: better to place this at the top or separate logout script,
-    // but keeping here for your current structure.
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         session_unset();
         session_destroy();
