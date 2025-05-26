@@ -19,18 +19,23 @@
 
         $email = trim($_POST['email']);
         $password = $_POST['password'];
-        $role = $_POST['role'];
+        $role = $_POST['role'];        $tableMap = [
+            "client" => "cclient",
+            "property_owner" => "privateowner", 
+            "staff" => "staff"
+        ];
 
-        $tableMap = [
-            "client" => "CClient",
-            "property_owner" => "PrivateOwner",
-            "staff" => "Staff"
+        $emailColumnMap = [
+            "client" => "eMail",
+            "property_owner" => "eMail",
+            "staff" => "email"
         ];
 
         if (!isset($tableMap[$role])) {
             $error = "Invalid role selected.";
         } else {
-            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
+            $emailColumn = $emailColumnMap[$role];
+            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE {$emailColumn} = ?";
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {

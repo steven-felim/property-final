@@ -4,8 +4,8 @@ require_once './db_connection.php';
 // Ambil properti terbaru dari database
 $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, 
                pi.image
-        FROM PropertyForRent p
-        LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo
+        FROM propertyforrent p
+        LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo
         ORDER BY p.propertyNo DESC";
 $result = $conn->query($sql);
 

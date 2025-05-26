@@ -8,7 +8,7 @@ if (!$propertyId) {
     exit;
 }
 
-$stmt = $conn->prepare("SELECT image FROM PropertyImage WHERE propertyNo = ?");
+$stmt = $conn->prepare("SELECT image FROM propertyimage WHERE propertyNo = ?");
 $stmt->bind_param("s", $propertyId);
 $stmt->execute();
 $result = $stmt->get_result();

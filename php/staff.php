@@ -13,8 +13,8 @@ $userRole = $_SESSION['user_role'];
 // Fetch all properties
 $properties = [];
 $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, po.fName AS ownerFName, po.lName AS ownerLName
-        FROM PropertyForRent p
-        JOIN PrivateOwner po ON p.ownerNo = po.ownerNo
+        FROM propertyforrent p
+        JOIN privateowner po ON p.ownerNo = po.ownerNo
         ORDER BY p.propertyNo DESC";
 $result = $conn->query($sql);
 if ($result) {
@@ -26,10 +26,10 @@ if ($result) {
 // Fetch all clients and owners for registration
 $clients = [];
 $owners = [];
-$res = $conn->query("SELECT clientNo, fName, lName FROM CClient");
+$res = $conn->query("SELECT clientNo, fName, lName FROM cclient");
 while ($row = $res->fetch_assoc())
     $clients[] = $row;
-$res = $conn->query("SELECT ownerNo, fName, lName FROM PrivateOwner");
+$res = $conn->query("SELECT ownerNo, fName, lName FROM privateowner");
 while ($row = $res->fetch_assoc())
     $owners[] = $row;
 
@@ -37,9 +37,8 @@ while ($row = $res->fetch_assoc())
 $registerMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_client'])) {
     $clientNo = $_POST['clientNo'];
-    $ownerNo = $_POST['ownerNo'];
-    // Assign client to owner's property (example: update registration table)
-    $sql = "UPDATE Registration SET branchNo = (SELECT branchNo FROM PropertyForRent WHERE ownerNo = ? LIMIT 1) WHERE clientNo = ?";
+    $ownerNo = $_POST['ownerNo'];    // Assign client to owner's property (example: update registration table)
+    $sql = "UPDATE registration SET branchNo = (SELECT branchNo FROM propertyforrent WHERE ownerNo = ? LIMIT 1) WHERE clientNo = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $ownerNo, $clientNo);
     if ($stmt->execute()) {
@@ -54,7 +53,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_client'])) {
 $removeMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_property'])) {
     $propertyNo = $_POST['propertyNo'];
-    $stmt = $conn->prepare("DELETE FROM PropertyForRent WHERE propertyNo = ?");
+    $stmt = $conn->prepare("DELETE FROM propertyforrent WHERE propertyNo = ?");
     $stmt->bind_param("s", $propertyNo);
     if ($stmt->execute()) {
         $removeMsg = "Property removed successfully.";

@@ -11,7 +11,7 @@ require_once './db_connection.php';
 // Get ownerNo for the logged-in user
 $ownerNo = null;
 $email = $_SESSION['user_email'];
-$stmt = $conn->prepare("SELECT ownerNo FROM PrivateOwner WHERE eMail = ?");
+$stmt = $conn->prepare("SELECT ownerNo FROM privateowner WHERE eMail = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $stmt->bind_result($ownerNo);
@@ -29,7 +29,7 @@ if (!isset($_GET['propertyNo'])) {
 $propertyNo = $_GET['propertyNo'];
 
 // Fetch property data
-$stmt = $conn->prepare("SELECT street, city, postcode, pType, rooms, rent, branchNo FROM PropertyForRent WHERE propertyNo = ? AND ownerNo = ?");
+$stmt = $conn->prepare("SELECT street, city, postcode, pType, rooms, rent, branchNo FROM propertyforrent WHERE propertyNo = ? AND ownerNo = ?");
 $stmt->bind_param("ss", $propertyNo, $ownerNo);
 $stmt->execute();
 $stmt->bind_result($street, $city, $postcode, $pType, $rooms, $rent, $branchNo);
@@ -40,7 +40,7 @@ $stmt->close();
 
 // Fetch branches for dropdown
 $branches = [];
-$result = $conn->query("SELECT branchNo, street, city FROM Branch");
+$result = $conn->query("SELECT branchNo, street, city FROM branch");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $branches[] = $row;
@@ -57,7 +57,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $newRent = $_POST['rent'];
     $newBranchNo = $_POST['branchNo'];
 
-    $stmt = $conn->prepare("UPDATE PropertyForRent SET street=?, city=?, postcode=?, pType=?, rooms=?, rent=?, branchNo=? WHERE propertyNo=? AND ownerNo=?");
+    $stmt = $conn->prepare("UPDATE propertyforrent SET street=?, city=?, postcode=?, pType=?, rooms=?, rent=?, branchNo=? WHERE propertyNo=? AND ownerNo=?");
     $stmt->bind_param("ssssissss", $newStreet, $newCity, $newPostcode, $newPType, $newRooms, $newRent, $newBranchNo, $propertyNo, $ownerNo);
     if ($stmt->execute()) {
         header("Location: properties.php");
