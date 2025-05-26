@@ -249,11 +249,13 @@ if (isset($_GET['all_comments'])) {
     }
 
     function nextImage() {
+        if (images.length === 0) return;
         currentImageIndex = (currentImageIndex + 1) % images.length;
         updateCarousel();
     }
 
     function prevImage() {
+        if (images.length === 0) return;
         currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
         updateCarousel();
     }

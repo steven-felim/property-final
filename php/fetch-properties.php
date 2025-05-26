@@ -13,8 +13,8 @@ $properties = [];
 while ($row = $result->fetch_assoc()) {
     // Jika image kosong, pakai default
     $image_url = $row['image'] 
-        ? '../img/property/' . $row['image'] 
-        : '../img/default-property.jpg';
+        ? '../img/' . $row['image'] 
+        : '../img/no-image-available.png';
 
     $properties[] = [
         'propertyNo' => $row['propertyNo'],
@@ -24,7 +24,7 @@ while ($row = $result->fetch_assoc()) {
     ];
 }
 
-header('Content-Type: application/json');
+header('Content-Type: homepage.php');
 echo json_encode($properties);
 $conn->close();
 ?>
