@@ -8,6 +8,106 @@ if (!isset($_SESSION['user_email'])) {
 
 $userEmail = $_SESSION['user_email'];
 $userRole = $_SESSION['user_role'];
+require_once './db_connection.php';
+
+$rentMsg = '';
+if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $userRole === 'client') {
+    $propertyId = $_POST['property_id'];
+
+    // Ambil clientNo
+    $stmt = $conn->prepare("SELECT clientNo FROM CClient WHERE eMail = ?");
+    $stmt->bind_param("s", $userEmail);
+    $stmt->execute();
+    $stmt->bind_result($clientNo);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Ambil branchNo dari property
+    $stmt = $conn->prepare("SELECT branchNo FROM PropertyForRent WHERE propertyNo = ?");
+    $stmt->bind_param("s", $propertyId);
+    $stmt->execute();
+    $stmt->bind_result($branchNo);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Ambil staffNo random (atau bisa diatur staff tertentu, misal staff pertama di branch)
+    $stmt = $conn->prepare("SELECT staffNo FROM Staff WHERE branchNo = ? LIMIT 1");
+    $stmt->bind_param("s", $branchNo);
+    $stmt->execute();
+    $stmt->bind_result($staffNo);
+    $stmt->fetch();
+    $stmt->close();
+
+    // Cek apakah client sudah terdaftar di registration
+    $stmt = $conn->prepare("SELECT clientNo FROM Registration WHERE clientNo = ?");
+    $stmt->bind_param("s", $clientNo);
+    $stmt->execute();
+    $stmt->store_result();
+
+    if ($stmt->num_rows == 0) {
+        $stmt->close();
+        // Insert ke registration
+        $dateJoined = date('Y-m-d');
+        $stmt = $conn->prepare("INSERT INTO Registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
+        $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
+        if ($stmt->execute()) {
+            $rentMsg = "Successfully rented! You are now registered to branch and staff.";
+        } else {
+            $rentMsg = "Failed to register rental.";
+        }
+        $stmt->close();
+    } else {
+        $rentMsg = "You are already registered.";
+        $stmt->close();
+    }
+}
+
+// Ambil detail property dari DB
+$propertyDetail = null;
+$propertyId = $_GET['id'] ?? '';
+if ($propertyId) {
+    $stmt = $conn->prepare("SELECT pType, street, city, rooms, rent FROM PropertyForRent WHERE propertyNo = ?");
+    $stmt->bind_param("s", $propertyId);
+    $stmt->execute();
+    $stmt->bind_result($pType, $street, $city, $rooms, $rent);
+    if ($stmt->fetch()) {
+        $propertyDetail = [
+            'pType' => $pType,
+            'street' => $street,
+            'city' => $city,
+            'rooms' => $rooms,
+            'rent' => $rent
+        ];
+    }
+    $stmt->close();
+}
+
+// Handler untuk fetch seluruh komentar dari semua property
+if (isset($_GET['all_comments'])) {
+    $comments = [];
+    $stmt = $conn->prepare(
+        "SELECT c.fName, c.lName, v.vComment, v.viewDate, v.propertyNo
+         FROM Viewing v
+         JOIN CClient c ON v.clientNo = c.clientNo
+         WHERE v.vComment IS NOT NULL AND v.vComment != ''
+         ORDER BY v.viewDate DESC"
+    );
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $comments[] = [
+            'user' => $row['fName'] . ' ' . $row['lName'],
+            'comment' => $row['vComment'],
+            'date' => $row['viewDate'],
+            'propertyNo' => $row['propertyNo']
+        ];
+    }
+    $stmt->close();
+    header('Content-Type: application/json');
+    echo json_encode($comments);
+    $conn->close();
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -63,11 +163,18 @@ $userRole = $_SESSION['user_role'];
 
             <!-- RIGHT: Property Details -->
             <div class="property-info" style="flex: 1; background-color: #f9f9f9; padding: 20px; border: 1px solid #ccc;">
-                <h2 id="property-type">Property Type</h2>
-                <p><strong>Address:</strong> <span id="property-address"></span></p>
-                <p><strong>Rooms:</strong> <span id="property-rooms"></span></p>
-                <p><strong>Rent:</strong> $<span id="property-rent"></span>/month</p>
-                <button style="margin-top: 20px;" onclick="rentProperty()">Rent This Property</button>
+                <h2 id="property-type"><?php echo htmlspecialchars($propertyDetail['pType'] ?? '-'); ?></h2>
+                <p><strong>Address:</strong> <span id="property-address"><?php echo htmlspecialchars(($propertyDetail['street'] ?? '') . ', ' . ($propertyDetail['city'] ?? '')); ?></span></p>
+                <p><strong>Rooms:</strong> <span id="property-rooms"><?php echo htmlspecialchars($propertyDetail['rooms'] ?? '-'); ?></span></p>
+                <p><strong>Rent:</strong> $<span id="property-rent"><?php echo htmlspecialchars($propertyDetail['rent'] ?? '-'); ?></span>/month</p>
+                <?php if ($userRole === 'client'): ?>
+                    <form method="post" style="margin-top: 20px;">
+                        <input type="hidden" name="rent_property" value="1">
+                        <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
+                        <button type="submit">Rent This Property</button>
+                    </form>
+                    <?php if (isset($rentMsg)) echo "<p style='color:green;'>$rentMsg</p>"; ?>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -76,11 +183,11 @@ $userRole = $_SESSION['user_role'];
         <!-- Schedule Viewing -->
         <div class="viewing-form">
             <br><h3>Schedule a Viewing</h3><br>
-            <div id="viewing-message">Last visited property: DD/MM/YYYY</div>
+            <div id="viewing-message"></div>
             <form id="viewing-form">
                 <label for="viewing-date">Choose a date:</label>
                 <input type="date" id="viewing-date" name="viewing_date" required>
-                <input type="hidden" id="property-id" name="property_id">
+                <input type="hidden" id="property-id" name="property_id" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
                 <button type="submit">Submit Viewing Request</button>
             </form>
             <br>
@@ -91,17 +198,13 @@ $userRole = $_SESSION['user_role'];
         <!-- Comments Section -->
         <div class="comments-section">
             <br><h3>Comments</h3><br>
-            <div id="comments-list">DD/MM/YYYY - Loading client's comments...</div>
+            <div id="comments-list">Loading client's comments...</div>
             <br>
             <h4>Leave a Comment</h4>
             <form id="comment-form">
-                <div class="comments-list" id="comments-list">
-                    <!-- Comments will be populated by JavaScript -->
-                </div>
-                <div class="add-comment">
-                    <textarea id="comment-text" placeholder="Write your comment here..." rows="4" style="width: 100%;"></textarea>
-                    <button id="submit-comment" style="margin-top: 10px;">Submit</button>
-                </div>
+                <textarea id="comment-text" name="comment" placeholder="Write your comment here..." rows="4" style="width: 100%;" required></textarea>
+                <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
+                <button id="submit-comment" style="margin-top: 10px;">Submit</button>
             </form>
             <div id="comment-message"></div>
         </div>
@@ -146,16 +249,18 @@ $userRole = $_SESSION['user_role'];
     }
 
     function nextImage() {
+        if (images.length === 0) return;
         currentImageIndex = (currentImageIndex + 1) % images.length;
         updateCarousel();
     }
 
     function prevImage() {
+        if (images.length === 0) return;
         currentImageIndex = (currentImageIndex - 1 + images.length) % images.length;
         updateCarousel();
     }
 
-    // Handle viewing form
+    // Schedule Viewing
     document.getElementById('viewing-form').addEventListener('submit', function (e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -166,6 +271,9 @@ $userRole = $_SESSION['user_role'];
         .then(res => res.text())
         .then(data => {
             document.getElementById('viewing-message').textContent = data;
+        })
+        .catch(() => {
+            document.getElementById('viewing-message').textContent = "Failed to schedule viewing.";
         });
     });
 
@@ -176,6 +284,9 @@ $userRole = $_SESSION['user_role'];
             .then(comments => {
                 const list = comments.map(c => `<p><strong>${c.user}:</strong> ${c.comment}</p>`).join('');
                 document.getElementById('comments-list').innerHTML = list || "No comments yet.";
+            })
+            .catch(() => {
+                document.getElementById('comments-list').innerHTML = "No comments yet.";
             });
     }
     loadComments();
@@ -192,9 +303,18 @@ $userRole = $_SESSION['user_role'];
         .then(data => {
             document.getElementById('comment-message').textContent = data;
             loadComments(); // Reload comments
-            document.getElementById('comment').value = ''; // Clear field
+            document.getElementById('comment-text').value = ''; // Clear textarea
+        })
+        .catch(() => {
+            document.getElementById('comment-message').textContent = "Failed to submit comment.";
         });
     });
+
+    const propertyDetail = <?php echo json_encode($propertyDetail); ?>;
+    document.getElementById('property-type').textContent = propertyDetail.pType || '-';
+    document.getElementById('property-address').textContent = (propertyDetail.street || '') + ', ' + (propertyDetail.city || '');
+    document.getElementById('property-rooms').textContent = propertyDetail.rooms || '-';
+    document.getElementById('property-rent').textContent = propertyDetail.rent || '-';
 </script>
 </body>
 </html>

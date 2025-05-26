@@ -135,14 +135,15 @@ $userRole = $_SESSION['user_role'];
             .then(response => response.json())
             .then(data => {
                 const propertyList = document.getElementById('property-list');
+                propertyList.innerHTML = '';
                 data.forEach(property => {
                     const propertyCard = document.createElement('div');
                     propertyCard.classList.add('property-card');
                     propertyCard.innerHTML = `
                         <img src="${property.image_url}" alt="${property.title}">
                         <h3>${property.title}</h3>
-                        <p>$${property.price}/month</p>
-                        <a href="#">View Details</a>
+                        <p>Rp${property.price}/bulan</p>
+                        <a href="property.php?id=${property.propertyNo}" class="btn-view-details">View Details</a>
                     `;
                     propertyList.appendChild(propertyCard);
                 });

@@ -45,25 +45,27 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         }
     }
 
-    // Insert property into PropertyForRent
-    $stmt = $conn->prepare("INSERT INTO PropertyForRent (street, city, postcode, pType, rooms, rent, ownerNo, branchNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?)");
-    $stmt->bind_param("ssssdiss", $street, $city, $postcode, $pType, $rooms, $price, $ownerNo, $branchNo);
+    // Generate propertyNo format PB01, PB02, dst
+    $result = $conn->query("SELECT propertyNo FROM PropertyForRent WHERE propertyNo LIKE 'PB%' ORDER BY propertyNo DESC LIMIT 1");
+    $lastNo = 0;
+    if ($result && $row = $result->fetch_assoc()) {
+        // Ambil angka dari propertyNo terakhir, misal PB07 -> 7
+        $lastNo = intval(substr($row['propertyNo'], 2));
+    }
+    $newNo = $lastNo + 1;
+    $propertyNo = 'PB' . str_pad($newNo, 2, '0', STR_PAD_LEFT);
+
+    // Insert property dengan propertyNo custom
+    $stmt = $conn->prepare("INSERT INTO PropertyForRent (propertyNo, street, city, postcode, pType, rooms, rent, ownerNo, branchNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $stmt->bind_param("sssssdiss", $propertyNo, $street, $city, $postcode, $pType, $rooms, $price, $ownerNo, $branchNo);
     if ($stmt->execute()) {
-        // Fetch the last inserted propertyNo for this owner
-        $stmtProp = $conn->prepare("SELECT propertyNo FROM PropertyForRent WHERE ownerNo = ? ORDER BY propertyNo DESC LIMIT 1");
-        $stmtProp->bind_param("s", $ownerNo);
-        $stmtProp->execute();
-        $stmtProp->bind_result($propertyNo);
-        $stmtProp->fetch();
-        $stmtProp->close();
-        // Insert image into PropertyImage if uploaded
+        // Insert image ke PropertyImage jika ada
         if ($imagePath) {
             $stmtImg = $conn->prepare("INSERT INTO PropertyImage (propertyNo, image) VALUES (?, ?)");
             $stmtImg->bind_param("ss", $propertyNo, $imagePath);
             $stmtImg->execute();
             $stmtImg->close();
         }
-        // Redirect to viewing.php instead of view.php
         header("Location: viewing.php");
         exit();
     } else {

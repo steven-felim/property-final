@@ -56,6 +56,20 @@ if (!$user) {
 $clientNo = $ownerNo = null;
 if ($userRole === 'client') {
     $clientNo = $user['clientNo'];
+
+    // Ambil info branch dan staff dari registration
+    $stmt = $conn->prepare("
+        SELECT b.street AS branchStreet, b.city AS branchCity, s.fName AS staffFName, s.lName AS staffLName
+        FROM Registration r
+        LEFT JOIN Branch b ON r.branchNo = b.branchNo
+        LEFT JOIN Staff s ON r.staffNo = s.staffNo
+        WHERE r.clientNo = ?
+    ");
+    $stmt->bind_param("s", $clientNo);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    $regInfo = $result->fetch_assoc();
+    $stmt->close();
 } elseif ($userRole === 'property_owner') {
     $ownerNo = $user['ownerNo'];
 }
@@ -156,6 +170,13 @@ if ($userRole === 'property_owner' && $ownerNo) {
                 <p><strong>Phone:</strong> <?php echo htmlspecialchars($user['telNo']); ?></p>
                 <p><strong>Preferred Type:</strong> <?php echo htmlspecialchars($user['prefType']); ?></p>
                 <p><strong>Max Rent:</strong> $<?php echo htmlspecialchars($user['maxRent']); ?></p>
+                <?php if (!empty($regInfo)): ?>
+                    <p><strong>Registered Branch:</strong> <?php echo htmlspecialchars($regInfo['branchStreet'] . ', ' . $regInfo['branchCity']); ?></p>
+                    <p><strong>Assigned Staff:</strong> <?php echo htmlspecialchars($regInfo['staffFName'] . ' ' . $regInfo['staffLName']); ?></p>
+                <?php else: ?>
+                    <p><strong>Registered Branch:</strong> -</p>
+                    <p><strong>Assigned Staff:</strong> -</p>
+                <?php endif; ?>
 
                 <h3>Viewed Properties</h3>
                 <ul>
