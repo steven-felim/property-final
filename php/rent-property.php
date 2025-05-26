@@ -13,7 +13,7 @@ $staffNo = $_POST['staffNo']; // staff yang melakukan proses (bisa dari session 
 $dateJoined = date('Y-m-d');
 
 // Ambil clientNo dari email
-$stmt = $conn->prepare("SELECT clientNo FROM CClient WHERE eMail = ?");
+$stmt = $conn->prepare("SELECT clientNo FROM cclient WHERE eMail = ?");
 $stmt->bind_param("s", $clientEmail);
 $stmt->execute();
 $stmt->bind_result($clientNo);
@@ -21,7 +21,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Ambil branchNo dari property
-$stmt = $conn->prepare("SELECT branchNo FROM PropertyForRent WHERE propertyNo = ?");
+$stmt = $conn->prepare("SELECT branchNo FROM propertyforrent WHERE propertyNo = ?");
 $stmt->bind_param("s", $propertyNo);
 $stmt->execute();
 $stmt->bind_result($branchNo);
@@ -29,7 +29,7 @@ $stmt->fetch();
 $stmt->close();
 
 // Cek apakah client sudah terdaftar di registration
-$stmt = $conn->prepare("SELECT clientNo FROM Registration WHERE clientNo = ?");
+$stmt = $conn->prepare("SELECT clientNo FROM registration WHERE clientNo = ?");
 $stmt->bind_param("s", $clientNo);
 $stmt->execute();
 $stmt->store_result();
@@ -37,7 +37,7 @@ $stmt->store_result();
 if ($stmt->num_rows == 0) {
     // Insert baru
     $stmt->close();
-    $stmt = $conn->prepare("INSERT INTO Registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
+    $stmt = $conn->prepare("INSERT INTO registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
     $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
     $stmt->execute();
     $stmt->close();

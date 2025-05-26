@@ -19,18 +19,28 @@
 
         $email = trim($_POST['email']);
         $password = $_POST['password'];
-        $role = $_POST['role'];
+        $role = $_POST['role'];        $tableMap = [
+            "client" => "cclient",
+            "property_owner" => "privateowner", 
+            "staff" => "staff"
+        ];
 
-        $tableMap = [
-            "client" => "CClient",
-            "property_owner" => "PrivateOwner",
-            "staff" => "Staff"
+        $emailColumnMap = [
+            "client" => "eMail",
+            "property_owner" => "eMail",
+            "staff" => "email"
         ];
 
         if (!isset($tableMap[$role])) {
             $error = "Invalid role selected.";
         } else {
-            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
+            $emailColumn = $emailColumnMap[$role];
+            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE {$emailColumn} = ?";
+            if ($role === 'staff') {
+                $sql = "SELECT fname, lname, password, sPosition FROM {$tableMap[$role]} WHERE email = ?";
+            } else {
+                $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
+            }
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
@@ -42,20 +52,25 @@
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['user_email'] = $email;
                         $_SESSION['user_role'] = $role;
+
                         if ($role === 'staff') {
+                            $_SESSION['sPosition'] = $user['sPosition'];
                             header("Location: staff.php");
                         } else {
                             header("Location: homepage.php");
                         }
                         exit();
+                    } else {
+                        $error = "Incorrect password.";
                     }
                 } else {
-                    $error = "Email or password is incorrect.";
+                    $error = "No account found with that email.";
                 }
                 $stmt->close();
             } else {
                 $error = "Database query failed.";
             }
+
         }
 
         $conn->close();
@@ -75,8 +90,11 @@
     <div class="register-container">
         <h2>Log In</h2>
         <?php if (!empty($error)): ?>
-            <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
+            <div id="notification" class="notification error">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
         <?php endif; ?>
+
         <form action="" method="POST">
             <div class="form-group">
                 <label for="email">Email</label>

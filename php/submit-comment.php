@@ -12,9 +12,8 @@ $userEmail = $_SESSION['user_email'];
 $propertyId = $_POST['property_id'] ?? '';
 $comment = trim($_POST['comment'] ?? '');
 
-if ($propertyId && $comment) {
-    // Ambil clientNo dari email
-    $stmt = $conn->prepare("SELECT clientNo FROM CClient WHERE eMail = ?");
+if ($propertyId && $comment) {    // Ambil clientNo dari email
+    $stmt = $conn->prepare("SELECT clientNo FROM cclient WHERE eMail = ?");
     $stmt->bind_param("s", $userEmail);
     $stmt->execute();
     $stmt->bind_result($clientNo);
@@ -25,10 +24,8 @@ if ($propertyId && $comment) {
         echo "Client not found.";
         $conn->close();
         exit;
-    }
-
-    // Update vComment pada viewing terakhir untuk property ini
-    $stmt = $conn->prepare("UPDATE Viewing SET vComment = ? WHERE clientNo = ? AND propertyNo = ? ORDER BY viewDate DESC LIMIT 1");
+    }    // Update vComment pada viewing terakhir untuk property ini
+    $stmt = $conn->prepare("UPDATE viewing SET vComment = ? WHERE clientNo = ? AND propertyNo = ? ORDER BY viewDate DESC LIMIT 1");
     $stmt->bind_param("sss", $comment, $clientNo, $propertyId);
     if ($stmt->execute() && $stmt->affected_rows > 0) {
         echo "Comment submitted!";

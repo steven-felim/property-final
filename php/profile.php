@@ -12,9 +12,9 @@ $userRole = $_SESSION['user_role'];
 require_once './db_connection.php';
 
 $tableMap = [
-    "client" => "CClient",
-    "property_owner" => "PrivateOwner",
-    "staff" => "Staff"
+    "client" => "cclient",
+    "property_owner" => "privateowner", 
+    "staff" => "staff"
 ];
 
 if (!isset($tableMap[$userRole])) {
@@ -26,11 +26,11 @@ $table = $tableMap[$userRole];
 // Prepare role-specific SELECT query to get all needed fields
 switch ($userRole) {
     case 'client':
-        $query = "SELECT clientNo, fname, lname, telNo, prefType, maxRent FROM $table WHERE email = ?";
+        $query = "SELECT clientNo, fname, lname, telNo, prefType, maxRent FROM $table WHERE eMail = ?";
         break;
 
     case 'property_owner':
-        $query = "SELECT ownerNo, fname, lname, street, city, postcode, telNo FROM $table WHERE email = ?";
+        $query = "SELECT ownerNo, fname, lname, street, city, postcode, telNo FROM $table WHERE eMail = ?";
         break;
 
     case 'staff':
@@ -55,14 +55,12 @@ if (!$user) {
 // Extract clientNo or ownerNo for further queries
 $clientNo = $ownerNo = null;
 if ($userRole === 'client') {
-    $clientNo = $user['clientNo'];
-
-    // Ambil info branch dan staff dari registration
+    $clientNo = $user['clientNo'];    // Ambil info branch dan staff dari registration
     $stmt = $conn->prepare("
         SELECT b.street AS branchStreet, b.city AS branchCity, s.fName AS staffFName, s.lName AS staffLName
-        FROM Registration r
-        LEFT JOIN Branch b ON r.branchNo = b.branchNo
-        LEFT JOIN Staff s ON r.staffNo = s.staffNo
+        FROM registration r
+        LEFT JOIN branch b ON r.branchNo = b.branchNo
+        LEFT JOIN staff s ON r.staffNo = s.staffNo
         WHERE r.clientNo = ?
     ");
     $stmt->bind_param("s", $clientNo);
@@ -97,7 +95,7 @@ $rentedProperties = [];
 if ($userRole === 'client' && $clientNo) {
     $stmt = $conn->prepare("
         SELECT p.street, p.city, p.pType, r.rentStart, r.rentEnd
-        FROM Rent r
+        FROM rent r
         JOIN propertyforrent p ON r.propertyNo = p.propertyNo
         WHERE r.clientNo = ?
     ");
@@ -233,6 +231,7 @@ if ($userRole === 'property_owner' && $ownerNo) {
             <button type="submit">Log Out</button>
         </form>
         <button type="button" style="margin-left: 10px;" onclick="window.location.href='edit-profile.php'">Edit Profile</button>
+        <button type="button" style="margin-left: 10px;" onclick="window.location.href='change-password.php'">Change Password</button>
     </div>
 
     <?php

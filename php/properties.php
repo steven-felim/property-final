@@ -13,7 +13,7 @@
     // If property_owner, get their ownerNo
     $myOwnerNo = null;
     if ($userRole === 'property_owner') {
-        $stmt = $conn->prepare("SELECT ownerNo FROM PrivateOwner WHERE eMail = ?");
+        $stmt = $conn->prepare("SELECT ownerNo FROM privateowner WHERE eMail = ?");
         $stmt->bind_param("s", $userEmail);
         $stmt->execute();
         $stmt->bind_result($myOwnerNo);
@@ -23,10 +23,9 @@
 
     // Fetch all properties with their images and ownerNo
     $properties = [];
-    if ($userRole === 'property_owner' && $myOwnerNo) {
-        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
-                FROM PropertyForRent p 
-                LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo 
+    if ($userRole === 'property_owner' && $myOwnerNo) {        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
+                FROM propertyforrent p 
+                LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo 
                 WHERE p.ownerNo = ? 
                 ORDER BY p.propertyNo DESC";
         $stmt = $conn->prepare($sql);
@@ -39,10 +38,9 @@
             }
         }
         $stmt->close();
-    } else {
-        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
-                FROM PropertyForRent p 
-                LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo 
+    } else {        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
+                FROM propertyforrent p 
+                LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo 
                 ORDER BY p.propertyNo DESC";
         $result = $conn->query($sql);
         if ($result) {

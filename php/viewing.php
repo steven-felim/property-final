@@ -11,7 +11,7 @@
     require_once './db_connection.php';
     // Fetch all properties with their images
     $properties = [];
-    $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, pi.image FROM PropertyForRent p LEFT JOIN PropertyImage pi ON p.propertyNo = pi.propertyNo ORDER BY p.propertyNo DESC";
+    $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, pi.image FROM propertyforrent p LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo ORDER BY p.propertyNo DESC";
     $result = $conn->query($sql);
     if ($result) {
         while ($row = $result->fetch_assoc()) {

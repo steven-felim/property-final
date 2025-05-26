@@ -82,9 +82,8 @@
             })
             .catch(() => {
                 document.getElementById('highlighted-photo').src = '../img/no-image-available.png';
-            });
-        // Fetch and display comments for this property
-        fetch(`../php/get-comments.php?property_id=${propertyNo}`)
+            });        // Fetch and display comments for this property
+        fetch(`../php/get-comment.php?property_id=${propertyNo}`)
             .then(res => res.json())
             .then(comments => {
                 const list = comments.map(c => `<p><strong>${c.user}:</strong> ${c.comment}</p>`).join('');
