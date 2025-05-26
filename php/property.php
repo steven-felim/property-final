@@ -61,6 +61,33 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         $stmt->close();
     }
 }
+
+// Handler untuk fetch seluruh komentar dari semua property
+if (isset($_GET['all_comments'])) {
+    $comments = [];
+    $stmt = $conn->prepare(
+        "SELECT c.fName, c.lName, v.vComment, v.viewDate, v.propertyNo
+         FROM Viewing v
+         JOIN CClient c ON v.clientNo = c.clientNo
+         WHERE v.vComment IS NOT NULL AND v.vComment != ''
+         ORDER BY v.viewDate DESC"
+    );
+    $stmt->execute();
+    $result = $stmt->get_result();
+    while ($row = $result->fetch_assoc()) {
+        $comments[] = [
+            'user' => $row['fName'] . ' ' . $row['lName'],
+            'comment' => $row['vComment'],
+            'date' => $row['viewDate'],
+            'propertyNo' => $row['propertyNo']
+        ];
+    }
+    $stmt->close();
+    header('Content-Type: application/json');
+    echo json_encode($comments);
+    $conn->close();
+    exit;
+}
 ?>
 
 <!DOCTYPE html>
@@ -136,11 +163,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         <!-- Schedule Viewing -->
         <div class="viewing-form">
             <br><h3>Schedule a Viewing</h3><br>
-            <div id="viewing-message">Last visited property: DD/MM/YYYY</div>
+            <div id="viewing-message"></div>
             <form id="viewing-form">
                 <label for="viewing-date">Choose a date:</label>
                 <input type="date" id="viewing-date" name="viewing_date" required>
-                <input type="hidden" id="property-id" name="property_id">
+                <input type="hidden" id="property-id" name="property_id" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
                 <button type="submit">Submit Viewing Request</button>
             </form>
             <br>
@@ -151,17 +178,13 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         <!-- Comments Section -->
         <div class="comments-section">
             <br><h3>Comments</h3><br>
-            <div id="comments-list">DD/MM/YYYY - Loading client's comments...</div>
+            <div id="comments-list">Loading client's comments...</div>
             <br>
             <h4>Leave a Comment</h4>
             <form id="comment-form">
-                <div class="comments-list" id="comments-list">
-                    <!-- Comments will be populated by JavaScript -->
-                </div>
-                <div class="add-comment">
-                    <textarea id="comment-text" placeholder="Write your comment here..." rows="4" style="width: 100%;"></textarea>
-                    <button id="submit-comment" style="margin-top: 10px;">Submit</button>
-                </div>
+                <textarea id="comment-text" name="comment" placeholder="Write your comment here..." rows="4" style="width: 100%;" required></textarea>
+                <input type="hidden" name="property_id" value="<?php echo htmlspecialchars($_GET['id'] ?? ''); ?>">
+                <button id="submit-comment" style="margin-top: 10px;">Submit</button>
             </form>
             <div id="comment-message"></div>
         </div>
@@ -215,7 +238,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         updateCarousel();
     }
 
-    // Handle viewing form
+    // Schedule Viewing
     document.getElementById('viewing-form').addEventListener('submit', function (e) {
         e.preventDefault();
         const formData = new FormData(this);
@@ -226,6 +249,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         .then(res => res.text())
         .then(data => {
             document.getElementById('viewing-message').textContent = data;
+        })
+        .catch(() => {
+            document.getElementById('viewing-message').textContent = "Failed to schedule viewing.";
         });
     });
 
@@ -236,6 +262,9 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
             .then(comments => {
                 const list = comments.map(c => `<p><strong>${c.user}:</strong> ${c.comment}</p>`).join('');
                 document.getElementById('comments-list').innerHTML = list || "No comments yet.";
+            })
+            .catch(() => {
+                document.getElementById('comments-list').innerHTML = "No comments yet.";
             });
     }
     loadComments();
@@ -252,7 +281,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         .then(data => {
             document.getElementById('comment-message').textContent = data;
             loadComments(); // Reload comments
-            document.getElementById('comment').value = ''; // Clear field
+            document.getElementById('comment-text').value = ''; // Clear textarea
+        })
+        .catch(() => {
+            document.getElementById('comment-message').textContent = "Failed to submit comment.";
         });
     });
 </script>
