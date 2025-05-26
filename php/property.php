@@ -62,6 +62,26 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
     }
 }
 
+// Ambil detail property dari DB
+$propertyDetail = null;
+$propertyId = $_GET['id'] ?? '';
+if ($propertyId) {
+    $stmt = $conn->prepare("SELECT pType, street, city, rooms, rent FROM PropertyForRent WHERE propertyNo = ?");
+    $stmt->bind_param("s", $propertyId);
+    $stmt->execute();
+    $stmt->bind_result($pType, $street, $city, $rooms, $rent);
+    if ($stmt->fetch()) {
+        $propertyDetail = [
+            'pType' => $pType,
+            'street' => $street,
+            'city' => $city,
+            'rooms' => $rooms,
+            'rent' => $rent
+        ];
+    }
+    $stmt->close();
+}
+
 // Handler untuk fetch seluruh komentar dari semua property
 if (isset($_GET['all_comments'])) {
     $comments = [];
@@ -143,10 +163,10 @@ if (isset($_GET['all_comments'])) {
 
             <!-- RIGHT: Property Details -->
             <div class="property-info" style="flex: 1; background-color: #f9f9f9; padding: 20px; border: 1px solid #ccc;">
-                <h2 id="property-type">Property Type</h2>
-                <p><strong>Address:</strong> <span id="property-address"></span></p>
-                <p><strong>Rooms:</strong> <span id="property-rooms"></span></p>
-                <p><strong>Rent:</strong> $<span id="property-rent"></span>/month</p>
+                <h2 id="property-type"><?php echo htmlspecialchars($propertyDetail['pType'] ?? '-'); ?></h2>
+                <p><strong>Address:</strong> <span id="property-address"><?php echo htmlspecialchars(($propertyDetail['street'] ?? '') . ', ' . ($propertyDetail['city'] ?? '')); ?></span></p>
+                <p><strong>Rooms:</strong> <span id="property-rooms"><?php echo htmlspecialchars($propertyDetail['rooms'] ?? '-'); ?></span></p>
+                <p><strong>Rent:</strong> $<span id="property-rent"><?php echo htmlspecialchars($propertyDetail['rent'] ?? '-'); ?></span>/month</p>
                 <?php if ($userRole === 'client'): ?>
                     <form method="post" style="margin-top: 20px;">
                         <input type="hidden" name="rent_property" value="1">
@@ -287,6 +307,12 @@ if (isset($_GET['all_comments'])) {
             document.getElementById('comment-message').textContent = "Failed to submit comment.";
         });
     });
+
+    const propertyDetail = <?php echo json_encode($propertyDetail); ?>;
+    document.getElementById('property-type').textContent = propertyDetail.pType || '-';
+    document.getElementById('property-address').textContent = (propertyDetail.street || '') + ', ' + (propertyDetail.city || '');
+    document.getElementById('property-rooms').textContent = propertyDetail.rooms || '-';
+    document.getElementById('property-rent').textContent = propertyDetail.rent || '-';
 </script>
 </body>
 </html>
