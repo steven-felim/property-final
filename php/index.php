@@ -42,6 +42,7 @@
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['user_email'] = $email;
                         $_SESSION['user_role'] = $role;
+                        $_SESSION['user_name'] = $user['fname'] . ' ' . $user['lname']; // Menyimpan nama pengguna di session untuk alert
                         if ($role === 'staff') {
                             header("Location: staff.php");
                         } else {

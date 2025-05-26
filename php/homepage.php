@@ -55,8 +55,8 @@ if (!isset($_SESSION['user_email'])) {
 }
 
 $userEmail = $_SESSION['user_email'];
-$userName = $_SESSION['user_name'];
-$userRole = $_SESSION['user_role'];
+$userName = $_SESSION['user_name'] ?? ''; // for alert
+$userRole = $_SESSION['user_role'] ?? ''; // for alert
 ?>
 
 <!DOCTYPE html>
