@@ -58,6 +58,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_property'])) {
     $stmt->bind_param("s", $propertyNo);
     if ($stmt->execute()) {
         $removeMsg = "Property removed successfully.";
+        header("Refresh:0"); // auto refresh
+        exit();
     } else {
         $removeMsg = "Failed to remove property.";
     }
@@ -98,7 +100,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['remove_property'])) {
         </div>
     </header>
 
-    <div class="container" style="margin-top: 40px;">
+    <div class="container-staff" style="margin-top: 40px;">
         <h1>Staff Dashboard</h1>
 
         <!-- 1. View Property -->
