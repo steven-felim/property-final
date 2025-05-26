@@ -9,6 +9,7 @@ if (!isset($_SESSION['user_email']) && $_SESSION['user_role'] == 'staff') {
 
 $userEmail = $_SESSION['user_email'];
 $userRole = $_SESSION['user_role'];
+$postition = $_SESSION['sPosition'] ?? '';
 
 // Fetch all properties
 $properties = [];
