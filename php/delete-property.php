@@ -9,9 +9,8 @@ if (!isset($_SESSION['user_email']) || $_SESSION['user_role'] !== 'property_owne
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propertyNo'])) {
     require_once './db_connection.php';
     $propertyNo = $_POST['propertyNo'];
-    $email = $_SESSION['user_email'];
-    // Get ownerNo for this user
-    $stmt = $conn->prepare("SELECT ownerNo FROM PrivateOwner WHERE eMail = ?");
+    $email = $_SESSION['user_email'];    // Get ownerNo for this user
+    $stmt = $conn->prepare("SELECT ownerNo FROM privateowner WHERE eMail = ?");
     $stmt->bind_param("s", $email);
     $stmt->execute();
     $stmt->bind_result($ownerNo);
@@ -19,9 +18,8 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['propertyNo'])) {
     $stmt->close();
     if (!$ownerNo) {
         die('Owner not found.');
-    }
-    // Only allow delete if this property belongs to this owner
-    $stmt = $conn->prepare("DELETE FROM PropertyForRent WHERE propertyNo = ? AND ownerNo = ?");
+    }    // Only allow delete if this property belongs to this owner
+    $stmt = $conn->prepare("DELETE FROM propertyforrent WHERE propertyNo = ? AND ownerNo = ?");
     $stmt->bind_param("ss", $propertyNo, $ownerNo);
     if ($stmt->execute()) {
         $stmt->close();

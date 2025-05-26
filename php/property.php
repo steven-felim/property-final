@@ -13,51 +13,76 @@ require_once './db_connection.php';
 $rentMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $userRole === 'client') {
     $propertyId = $_POST['property_id'];
-
-    // Ambil clientNo
-    $stmt = $conn->prepare("SELECT clientNo FROM CClient WHERE eMail = ?");
+    
+    // Get clientNo
+    $stmt = $conn->prepare("SELECT clientNo FROM cclient WHERE eMail = ?");
     $stmt->bind_param("s", $userEmail);
     $stmt->execute();
     $stmt->bind_result($clientNo);
     $stmt->fetch();
     $stmt->close();
-
-    // Ambil branchNo dari property
-    $stmt = $conn->prepare("SELECT branchNo FROM PropertyForRent WHERE propertyNo = ?");
-    $stmt->bind_param("s", $propertyId);
-    $stmt->execute();
-    $stmt->bind_result($branchNo);
-    $stmt->fetch();
-    $stmt->close();
-
-    // Ambil staffNo random (atau bisa diatur staff tertentu, misal staff pertama di branch)
-    $stmt = $conn->prepare("SELECT staffNo FROM Staff WHERE branchNo = ? LIMIT 1");
-    $stmt->bind_param("s", $branchNo);
-    $stmt->execute();
-    $stmt->bind_result($staffNo);
-    $stmt->fetch();
-    $stmt->close();
-
-    // Cek apakah client sudah terdaftar di registration
-    $stmt = $conn->prepare("SELECT clientNo FROM Registration WHERE clientNo = ?");
-    $stmt->bind_param("s", $clientNo);
+    
+    // Check if this property is already rented by this client
+    $stmt = $conn->prepare("SELECT rentNo FROM rent WHERE clientNo = ? AND propertyNo = ?");
+    $stmt->bind_param("ss", $clientNo, $propertyId);
     $stmt->execute();
     $stmt->store_result();
-
-    if ($stmt->num_rows == 0) {
-        $stmt->close();
-        // Insert ke registration
-        $dateJoined = date('Y-m-d');
-        $stmt = $conn->prepare("INSERT INTO Registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
-        $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
-        if ($stmt->execute()) {
-            $rentMsg = "Successfully rented! You are now registered to branch and staff.";
-        } else {
-            $rentMsg = "Failed to register rental.";
-        }
+    
+    if ($stmt->num_rows > 0) {
+        $rentMsg = "You have already rented this property.";
         $stmt->close();
     } else {
-        $rentMsg = "You are already registered.";
+        $stmt->close();
+        
+        // Get branchNo from property
+        $stmt = $conn->prepare("SELECT branchNo FROM propertyforrent WHERE propertyNo = ?");
+        $stmt->bind_param("s", $propertyId);
+        $stmt->execute();
+        $stmt->bind_result($branchNo);
+        $stmt->fetch();
+        $stmt->close();
+        
+        // Get staffNo (first staff in branch)
+        $stmt = $conn->prepare("SELECT staffNo FROM staff WHERE branchNo = ? LIMIT 1");
+        $stmt->bind_param("s", $branchNo);
+        $stmt->execute();
+        $stmt->bind_result($staffNo);
+        $stmt->fetch();
+        $stmt->close();
+        
+        // Check if client is registered, if not register them
+        $stmt = $conn->prepare("SELECT clientNo FROM registration WHERE clientNo = ?");
+        $stmt->bind_param("s", $clientNo);
+        $stmt->execute();
+        $stmt->store_result();
+        
+        if ($stmt->num_rows == 0) {
+            $stmt->close();
+            // Insert into registration
+            $dateJoined = date('Y-m-d');
+            $stmt = $conn->prepare("INSERT INTO registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
+            $stmt->execute();
+            $stmt->close();
+        } else {
+            $stmt->close();
+        }
+          // Generate unique rentNo (integer)
+        $rentNo = time() + rand(1000, 9999);
+        
+        // Set rental period (1 year from today)
+        $rentStart = date('Y-m-d');
+        $rentEnd = date('Y-m-d', strtotime('+1 year'));
+        
+        // Insert into rent table
+        $stmt = $conn->prepare("INSERT INTO rent (rentNo, clientNo, propertyNo, rentStart, rentEnd) VALUES (?, ?, ?, ?, ?)");
+        $stmt->bind_param("issss", $rentNo, $clientNo, $propertyId, $rentStart, $rentEnd);
+        
+        if ($stmt->execute()) {
+            $rentMsg = "Successfully rented! Property rental period: $rentStart to $rentEnd";
+        } else {
+            $rentMsg = "Failed to process rental. Please try again.";
+        }
         $stmt->close();
     }
 }
@@ -66,7 +91,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
 $propertyDetail = null;
 $propertyId = $_GET['id'] ?? '';
 if ($propertyId) {
-    $stmt = $conn->prepare("SELECT pType, street, city, rooms, rent FROM PropertyForRent WHERE propertyNo = ?");
+    $stmt = $conn->prepare("SELECT pType, street, city, rooms, rent FROM propertyforrent WHERE propertyNo = ?");
     $stmt->bind_param("s", $propertyId);
     $stmt->execute();
     $stmt->bind_result($pType, $street, $city, $rooms, $rent);
@@ -84,11 +109,10 @@ if ($propertyId) {
 
 // Handler untuk fetch seluruh komentar dari semua property
 if (isset($_GET['all_comments'])) {
-    $comments = [];
-    $stmt = $conn->prepare(
+    $comments = [];    $stmt = $conn->prepare(
         "SELECT c.fName, c.lName, v.vComment, v.viewDate, v.propertyNo
-         FROM Viewing v
-         JOIN CClient c ON v.clientNo = c.clientNo
+         FROM viewing v
+         JOIN cclient c ON v.clientNo = c.clientNo
          WHERE v.vComment IS NOT NULL AND v.vComment != ''
          ORDER BY v.viewDate DESC"
     );
@@ -275,11 +299,9 @@ if (isset($_GET['all_comments'])) {
         .catch(() => {
             document.getElementById('viewing-message').textContent = "Failed to schedule viewing.";
         });
-    });
-
-    // Load comments
+    });    // Load comments
     function loadComments() {
-        fetch(`../php/get-comments.php?property_id=${propertyId}`)
+        fetch(`../php/get-comment.php?property_id=${propertyId}`)
             .then(res => res.json())
             .then(comments => {
                 const list = comments.map(c => `<p><strong>${c.user}:</strong> ${c.comment}</p>`).join('');

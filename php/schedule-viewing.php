@@ -12,9 +12,8 @@ $userEmail = $_SESSION['user_email'];
 $propertyId = $_POST['property_id'] ?? '';
 $date = $_POST['viewing_date'] ?? '';
 
-if ($propertyId && $date) {
-    // Ambil clientNo dari email
-    $stmt = $conn->prepare("SELECT clientNo FROM CClient WHERE eMail = ?");
+if ($propertyId && $date) {    // Ambil clientNo dari email
+    $stmt = $conn->prepare("SELECT clientNo FROM cclient WHERE eMail = ?");
     $stmt->bind_param("s", $userEmail);
     $stmt->execute();
     $stmt->bind_result($clientNo);
@@ -25,10 +24,8 @@ if ($propertyId && $date) {
         echo "Client not found.";
         $conn->close();
         exit;
-    }
-
-    // Insert ke tabel viewing
-    $stmt = $conn->prepare("INSERT INTO Viewing (clientNo, propertyNo, viewDate) VALUES (?, ?, ?)");
+    }    // Insert ke tabel viewing
+    $stmt = $conn->prepare("INSERT INTO viewing (clientNo, propertyNo, viewDate) VALUES (?, ?, ?)");
     $stmt->bind_param("sss", $clientNo, $propertyId, $date);
     if ($stmt->execute()) {
         echo "Viewing scheduled!";

@@ -19,14 +19,8 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Hash password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    $email = mb_convert_encoding($email, 'UTF-8', 'UTF-8'); // Normalize encoding
-
-    // Check if email exists in any table
-    $checkEmailQuery = "SELECT eMail FROM CClient WHERE eMail = ? 
-                    UNION 
-                    SELECT eMail FROM PrivateOwner WHERE eMail = ? 
-                    UNION 
-                    SELECT email FROM Staff WHERE email = ?";
+    $email = mb_convert_encoding($email, 'UTF-8', 'UTF-8'); // Normalize encoding    // Check if email exists in any table
+    $checkEmailQuery = "SELECT eMail FROM cclient WHERE eMail = ? UNION SELECT eMail FROM privateowner WHERE eMail = ? UNION SELECT email FROM staff WHERE email = ?";
 
     $stmt = $conn->prepare($checkEmailQuery);
     $stmt->bind_param("sss", $email, $email, $email);
@@ -34,12 +28,11 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         $error = "Email already exists.";
-    } else {
-        // Role to table mapping
+    } else {        // Role to table mapping
         $tableMap = [
-            "client" => ["table" => "CClient", "id_column" => "clientNo"],
-            "property_owner" => ["table" => "PrivateOwner", "id_column" => "ownerNo"],
-            "staff" => ["table" => "Staff", "id_column" => "staffNo"]
+            "client" => ["table" => "cclient", "id_column" => "clientNo"],
+            "property_owner" => ["table" => "privateowner", "id_column" => "ownerNo"],
+            "staff" => ["table" => "staff", "id_column" => "staffNo"]
         ];
 
         if (!isset($tableMap[$role])) {

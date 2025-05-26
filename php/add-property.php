@@ -11,7 +11,7 @@ require_once './db_connection.php';
 // Get ownerNo from PrivateOwner table using session email
 $ownerNo = null;
 $email = $_SESSION['user_email'];
-$stmt = $conn->prepare("SELECT ownerNo FROM PrivateOwner WHERE eMail = ?");
+$stmt = $conn->prepare("SELECT ownerNo FROM privateowner WHERE eMail = ?");
 $stmt->bind_param("s", $email);
 $stmt->execute();
 $stmt->bind_result($ownerNo);
@@ -43,25 +43,20 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         } else {
             die('Image upload failed.');
         }
-    }
-
-    // Generate propertyNo format PB01, PB02, dst
-    $result = $conn->query("SELECT propertyNo FROM PropertyForRent WHERE propertyNo LIKE 'PB%' ORDER BY propertyNo DESC LIMIT 1");
+    }    // Generate propertyNo format PB01, PB02, dst
+    $result = $conn->query("SELECT propertyNo FROM propertyforrent WHERE propertyNo LIKE 'PB%' ORDER BY propertyNo DESC LIMIT 1");
     $lastNo = 0;
     if ($result && $row = $result->fetch_assoc()) {
         // Ambil angka dari propertyNo terakhir, misal PB07 -> 7
         $lastNo = intval(substr($row['propertyNo'], 2));
     }
     $newNo = $lastNo + 1;
-    $propertyNo = 'PB' . str_pad($newNo, 2, '0', STR_PAD_LEFT);
-
-    // Insert property dengan propertyNo custom
-    $stmt = $conn->prepare("INSERT INTO PropertyForRent (propertyNo, street, city, postcode, pType, rooms, rent, ownerNo, branchNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
+    $propertyNo = 'PB' . str_pad($newNo, 2, '0', STR_PAD_LEFT);    // Insert property dengan propertyNo custom
+    $stmt = $conn->prepare("INSERT INTO propertyforrent (propertyNo, street, city, postcode, pType, rooms, rent, ownerNo, branchNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssdiss", $propertyNo, $street, $city, $postcode, $pType, $rooms, $price, $ownerNo, $branchNo);
-    if ($stmt->execute()) {
-        // Insert image ke PropertyImage jika ada
+    if ($stmt->execute()) {        // Insert image ke PropertyImage jika ada
         if ($imagePath) {
-            $stmtImg = $conn->prepare("INSERT INTO PropertyImage (propertyNo, image) VALUES (?, ?)");
+            $stmtImg = $conn->prepare("INSERT INTO propertyimage (propertyNo, image) VALUES (?, ?)");
             $stmtImg->bind_param("ss", $propertyNo, $imagePath);
             $stmtImg->execute();
             $stmtImg->close();
@@ -78,7 +73,7 @@ $conn->close();
 // Fetch branches for dropdown
 $branches = [];
 require './db_connection.php';
-$result = $conn->query("SELECT branchNo, street, city FROM Branch");
+$result = $conn->query("SELECT branchNo, street, city FROM branch");
 if ($result) {
     while ($row = $result->fetch_assoc()) {
         $branches[] = $row;

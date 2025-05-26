@@ -11,9 +11,9 @@ $userRole = $_SESSION['user_role'];
 require_once './db_connection.php';
 
 $tableMap = [
-    "client" => "CClient",
-    "property_owner" => "PrivateOwner",
-    "staff" => "Staff"
+    "client" => "cclient",
+    "property_owner" => "privateowner", 
+    "staff" => "staff"
 ];
 
 if (!isset($tableMap[$userRole])) {
@@ -25,10 +25,10 @@ $table = $tableMap[$userRole];
 // Fetch current user data
 switch ($userRole) {
     case 'client':
-        $stmt = $conn->prepare("SELECT fname, lname, email, telNo, prefType, maxRent FROM $table WHERE email = ?");
+        $stmt = $conn->prepare("SELECT fname, lname, eMail, telNo, prefType, maxRent FROM $table WHERE eMail = ?");
         break;
     case 'property_owner':
-        $stmt = $conn->prepare("SELECT fname, lname, email, street, city, postcode, telNo FROM $table WHERE email = ?");
+        $stmt = $conn->prepare("SELECT fname, lname, eMail, street, city, postcode, telNo FROM $table WHERE eMail = ?");
         break;
     case 'staff':
         $stmt = $conn->prepare("SELECT fname, lname, email, sPosition, sex, DOB, salary FROM $table WHERE email = ?");
@@ -53,12 +53,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $lname = $_POST['lname'];
     $newEmail = $_POST['email'];
 
-    switch ($userRole) {
-        case 'client':
+    switch ($userRole) {        case 'client':
             $telNo = $_POST['telNo'];
             $prefType = $_POST['prefType'];
             $maxRent = $_POST['maxRent'];
-            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, email=?, telNo=?, prefType=?, maxRent=? WHERE email=?");
+            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, eMail=?, telNo=?, prefType=?, maxRent=? WHERE eMail=?");
             $stmt->bind_param("sssssis", $fname, $lname, $newEmail, $telNo, $prefType, $maxRent, $userEmail);
             break;
 
@@ -67,7 +66,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             $city = $_POST['city'];
             $postcode = $_POST['postcode'];
             $telNo = $_POST['telNo'];
-            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, email=?, street=?, city=?, postcode=?, telNo=? WHERE email=?");
+            $stmt = $conn->prepare("UPDATE $table SET fname=?, lname=?, eMail=?, street=?, city=?, postcode=?, telNo=? WHERE eMail=?");
             $stmt->bind_param("ssssssss", $fname, $lname, $newEmail, $street, $city, $postcode, $telNo, $userEmail);
             break;
 
@@ -117,7 +116,7 @@ $conn->close();
             </div>
             <div class="form-group">
                 <label for="email">Email</label>
-                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($user['email']); ?>" required>
+                <input type="email" id="email" name="email" value="<?php echo htmlspecialchars($userRole === 'staff' ? $user['email'] : $user['eMail']); ?>" required>
             </div>
             <?php if ($userRole === 'client'): ?>
                 <div class="form-group">

@@ -3,11 +3,10 @@
 require_once './db_connection.php';
 $propertyId = $_GET['property_id'] ?? '';
 $comments = [];
-if ($propertyId) {
-    $stmt = $conn->prepare(
+if ($propertyId) {    $stmt = $conn->prepare(
         "SELECT c.fName, c.lName, v.vComment, v.viewDate
-         FROM Viewing v
-         JOIN CClient c ON v.clientNo = c.clientNo
+         FROM viewing v
+         JOIN cclient c ON v.clientNo = c.clientNo
          WHERE v.propertyNo = ? AND v.vComment IS NOT NULL AND v.vComment != ''
          ORDER BY v.viewDate DESC"
     );
