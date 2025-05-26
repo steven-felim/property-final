@@ -167,7 +167,7 @@ if ($userRole === 'property_owner' && $ownerNo) {
             <?php if ($userRole === 'client'): ?>
                 <p><strong>Phone:</strong> <?php echo htmlspecialchars($user['telNo']); ?></p>
                 <p><strong>Preferred Type:</strong> <?php echo htmlspecialchars($user['prefType']); ?></p>
-                <p><strong>Max Rent:</strong> $<?php echo htmlspecialchars($user['maxRent']); ?></p>
+                <p><strong>Max Rent:</strong> Rp. <?php echo htmlspecialchars($user['maxRent']); ?></p>
                 <?php if (!empty($regInfo)): ?>
                     <p><strong>Registered Branch:</strong> <?php echo htmlspecialchars($regInfo['branchStreet'] . ', ' . $regInfo['branchCity']); ?></p>
                     <p><strong>Assigned Staff:</strong> <?php echo htmlspecialchars($regInfo['staffFName'] . ' ' . $regInfo['staffLName']); ?></p>
@@ -235,8 +235,6 @@ if ($userRole === 'property_owner' && $ownerNo) {
     </div>
 
     <?php
-    // Logout handling: better to place this at the top or separate logout script,
-    // but keeping here for your current structure.
     if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['logout'])) {
         session_unset();
         session_destroy();

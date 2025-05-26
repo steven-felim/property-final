@@ -18,6 +18,15 @@ body {
     margin: 0 auto;
 }
 
+/* Container Staff */
+.container-staff {
+    width: 80%;
+    margin: 0 auto;
+    padding-top: 110px;    /* Agar tidak tertutup header */
+    padding-bottom: 60px;  /* Agar tidak tertutup footer */
+    box-sizing: border-box;
+}
+
 /* Header */
 header {
     position: fixed;
@@ -126,9 +135,14 @@ header nav ul li a:hover {
 }
 
 .property-list {
-    display: flex;
-    justify-content: space-between;
-    gap: 20px;
+    display: grid;
+    grid-template-columns: repeat(3, 1fr); /* 3 kolom */
+    gap: 24px 20px; /* jarak antar card */
+    justify-items: center; /* card di tengah kolom */
+    align-items: stretch;
+    width: 100%;
+    margin: 0 auto;
+    padding: 0;
 }
 
 .property-card {
@@ -137,8 +151,11 @@ header nav ul li a:hover {
     border-radius: 8px;
     padding: 18px;
     margin: 10px;
-    width: 260px;
-    display: inline-block;
+    width: 100%;
+    max-width: 400px;
+    margin: 0;
+    display: block;
+    /* hilangkan display: inline-block dan margin: 0 auto */
     vertical-align: top;
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     text-align: center;

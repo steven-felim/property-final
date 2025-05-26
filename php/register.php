@@ -95,6 +95,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($stmt->execute()) {
                 $_SESSION['user_email'] = $email;
                 $_SESSION['user_role'] = $role;
+                $_SESSION['user_name'] = $firstName . ' ' . $lastName; // Set user name in session for alert
                 header("Location: homepage.php");
                 exit();
             } else {
