@@ -601,12 +601,12 @@ body.register-page {
     display: inline-block;
     margin-top: 10px;
     padding: 8px 18px;
-    background: #1976d2;
+    background: #847a4c;
     color: #fff;
     border-radius: 4px;
     text-decoration: none;
     font-weight: bold;
-    border: 1px solid #1976d2;
+    border: 1px solid #847a4c;
     transition: background 0.2s;
 }
 
@@ -616,9 +616,9 @@ body.register-page {
 
 /* Edit Button */
 .btn-edit-property {
-    background-color: #1976d2;
+    background-color: #847a4c;
     color: #fff;
-    border: 1px solid #1976d2;
+    border: 1px solid #847a4c;
     border-radius: 0;
     padding: 10px 18px;
     text-decoration: none;
@@ -627,7 +627,7 @@ body.register-page {
 }
 
 .btn-edit-property:hover {
-    background-color: #125ea2;
+    background-color: #847a4c;
     color: #fff;
 }
 

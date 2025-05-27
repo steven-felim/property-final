@@ -163,7 +163,7 @@ if (isset($_GET['ajax_staff_search'])) {
                 <ul>
                     <?php if($userRole === 'staff'): ?>
                         <li><a href="staff.php">Home</a></li>
-                        <li><a href=#>Staff Dashboard</a></li>
+                        <li><a href="staff.php">Staff Dashboard</a></li>
                     <?php else: ?>
                         <li><a href="homepage.php">Home</a></li>
                     <?php endif; ?>
@@ -289,6 +289,10 @@ if (isset($_GET['ajax_staff_search'])) {
                                     <input type="hidden" name="remove_staff" value="1">
                                     <input type="hidden" name="staffNo" value="<?php echo htmlspecialchars($s['staffNo']); ?>">
                                     <button type="submit" class="btn-remove-staff" onclick="return confirm('Are you sure you want to remove this staff?');">Remove</button>
+                                </form>
+                                <form method="get" action="edit-profile.php" style="display:inline;">
+                                    <input type="hidden" name="staffNo" value="<?php echo htmlspecialchars($s['staffNo']); ?>">
+                                    <button type="submit" class="btn-edit-staff">Edit</button>
                                 </form>
                             </td>
                         </tr>
