@@ -30,7 +30,11 @@
         if (!isset($tableMap[$role])) {
             $error = "Invalid role selected.";
         } else {
-            $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
+            if ($role === 'staff') {
+                $sql = "SELECT fname, lname, password, sPosition FROM {$tableMap[$role]} WHERE email = ?";
+            } else {
+                $sql = "SELECT fname, lname, password FROM {$tableMap[$role]} WHERE email = ?";
+            }
             $stmt = $conn->prepare($sql);
 
             if ($stmt) {
@@ -42,8 +46,9 @@
                     if (password_verify($password, $user['password'])) {
                         $_SESSION['user_email'] = $email;
                         $_SESSION['user_role'] = $role;
-                        $_SESSION['user_name'] = $user['fname'] . ' ' . $user['lname']; // Menyimpan nama pengguna di session untuk alert
+                        $_SESSION['user_name'] = $user['fname'] . ' ' . $user['lname'];
                         if ($role === 'staff') {
+                            $_SESSION['sPosition'] = $user['sPosition'];
                             header("Location: staff.php");
                         } else {
                             header("Location: homepage.php");
