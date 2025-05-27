@@ -76,7 +76,9 @@
     <div class="register-container">
         <h2>Log In</h2>
         <?php if (!empty($error)): ?>
-            <p style="color: red;"><?php echo htmlspecialchars($error); ?></p>
+            <div id="notification" class="notification error">
+                <?php echo htmlspecialchars($error); ?>
+            </div>
         <?php endif; ?>
         <form action="" method="POST">
             <div class="form-group">
