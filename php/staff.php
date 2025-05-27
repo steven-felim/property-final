@@ -167,6 +167,9 @@ if (isset($_GET['ajax_staff_search'])) {
                     <?php else: ?>
                         <li><a href="homepage.php">Home</a></li>
                     <?php endif; ?>
+                    <?php if (($postition ?? '') === 'admin'): ?>
+                        <li><a href="xml-admin-report.php">XML Report</a></li>
+                    <?php endif; ?>
                     <li><a href="properties.php">Properties</a></li>
                     <?php if (in_array($userRole, ['staff', 'property_owner'])): ?>
                         <li><a href="viewing.php">Viewing</a></li>
