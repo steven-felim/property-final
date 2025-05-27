@@ -32,16 +32,18 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $pType = $_POST['pType'];
     $branchNo = $_POST['branchNo'];
 
-    // Handle image upload
-    $imagePath = null;
-    if (isset($_FILES['image']) && $_FILES['image']['error'] === UPLOAD_ERR_OK) {
-        $imgName = uniqid('property_') . '_' . basename($_FILES['image']['name']);
-        $targetDir = '../img/';
-        $targetFile = $targetDir . $imgName;
-        if (move_uploaded_file($_FILES['image']['tmp_name'], $targetFile)) {
-            $imagePath = $imgName;
-        } else {
-            die('Image upload failed.');
+    // Handle multiple image upload
+    $imagePaths = [];
+    if (isset($_FILES['image']) && $_FILES['image']['error'][0] !== UPLOAD_ERR_NO_FILE) {
+        foreach ($_FILES['image']['tmp_name'] as $key => $tmp_name) {
+            if ($_FILES['image']['error'][$key] === UPLOAD_ERR_OK) {
+                $imgName = uniqid('property_') . '_' . basename($_FILES['image']['name'][$key]);
+                $targetDir = '../img/';
+                $targetFile = $targetDir . $imgName;
+                if (move_uploaded_file($tmp_name, $targetFile)) {
+                    $imagePaths[] = $imgName;
+                }
+            }
         }
     }    // Generate propertyNo format PB01, PB02, dst
     $result = $conn->query("SELECT propertyNo FROM propertyforrent WHERE propertyNo LIKE 'PB%' ORDER BY propertyNo DESC LIMIT 1");
@@ -54,10 +56,11 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $propertyNo = 'PB' . str_pad($newNo, 2, '0', STR_PAD_LEFT);    // Insert property dengan propertyNo custom
     $stmt = $conn->prepare("INSERT INTO propertyforrent (propertyNo, street, city, postcode, pType, rooms, rent, ownerNo, branchNo) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)");
     $stmt->bind_param("sssssdiss", $propertyNo, $street, $city, $postcode, $pType, $rooms, $price, $ownerNo, $branchNo);
-    if ($stmt->execute()) {        // Insert image ke PropertyImage jika ada
-        if ($imagePath) {
+    if ($stmt->execute()) {
+        // Insert all images ke PropertyImage jika ada
+        foreach ($imagePaths as $img) {
             $stmtImg = $conn->prepare("INSERT INTO propertyimage (propertyNo, image) VALUES (?, ?)");
-            $stmtImg->bind_param("ss", $propertyNo, $imagePath);
+            $stmtImg->bind_param("ss", $propertyNo, $img);
             $stmtImg->execute();
             $stmtImg->close();
         }
@@ -134,7 +137,7 @@ $conn->close();
             </div>
             <div class="form-group">
                 <label for="image">Image</label>
-                <input type="file" id="image" name="image" accept="image/*">
+                <input type="file" id="image" name="image[]" accept="image/*" multiple>
             </div>
             <button type="submit" class="btn-add-property">Add Property</button>
         </form>
