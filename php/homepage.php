@@ -142,7 +142,7 @@ $userRole = $_SESSION['user_role'] ?? ''; // for alert
                     propertyCard.innerHTML = `
                         <img src="${property.image_url}" alt="${property.title}">
                         <h3>${property.title}</h3>
-                        <p>Rp${property.price}/bulan</p>
+                        <p>$${property.price}/bulan</p>
                         <a href="property.php?id=${property.propertyNo}" class="btn-view-details">View Details</a>
                     `;
                     propertyList.appendChild(propertyCard);

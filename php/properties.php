@@ -98,7 +98,7 @@
                         <div class="property-card">
                             <img src="../img/<?php echo $property['image'] ? htmlspecialchars($property['image']) : 'no-image-available.png'; ?>" alt="<?php echo htmlspecialchars($property['pType']); ?>">
                             <h3><?php echo htmlspecialchars($property['pType']); ?> - <?php echo htmlspecialchars($property['city']); ?></h3>
-                            <p>Rp. <?php echo htmlspecialchars($property['rent']); ?>/month</p>
+                            <p>$ <?php echo htmlspecialchars($property['rent']); ?>/month</p>
                             <p><?php echo htmlspecialchars($property['street']); ?></p>
                             <div class="property-actions">
                                 <a href="property.php?id=<?php echo urlencode($property['propertyNo']); ?>" class="btn-view-details">View Details</a>
