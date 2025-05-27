@@ -290,7 +290,7 @@ if (isset($_GET['ajax_staff_search'])) {
                                     <input type="hidden" name="staffNo" value="<?php echo htmlspecialchars($s['staffNo']); ?>">
                                     <button type="submit" class="btn-remove-staff" onclick="return confirm('Are you sure you want to remove this staff?');">Remove</button>
                                 </form>
-                                <form method="get" action="edit-profile.php" style="display:inline;">
+                                <form method="get" action="edit-profileStaff.php" style="display:inline;">
                                     <input type="hidden" name="staffNo" value="<?php echo htmlspecialchars($s['staffNo']); ?>">
                                     <button type="submit" class="btn-edit-staff">Edit</button>
                                 </form>
