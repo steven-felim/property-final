@@ -156,7 +156,7 @@ header nav ul li a:hover {
     margin: 0;
     display: block;
     /* hilangkan display: inline-block dan margin: 0 auto */
-    vertical-align: top;
+    /* vertical-align: top; */
     box-shadow: 0 2px 8px rgba(0,0,0,0.04);
     text-align: center;
 }
