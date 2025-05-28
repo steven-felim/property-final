@@ -22,7 +22,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
         exit;
     }
     if (isset($_POST['generate_feed'])) {
-        include 'xml-generate-properties-feed.php';
+        include 'xml-export-rented-property.php';
         $reportMsg = "Properties Feed XML generated! <a href='../XML/properties.xml' download>Download</a>";
         $reportType = 'feed';
         exit;
