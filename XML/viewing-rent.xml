@@ -1,0 +1,32 @@
+<?xml version="1.0"?>
+<data>
+  <viewings>
+    <viewing>
+      <clientNo>CR02</clientNo>
+      <propertyNo>PB05</propertyNo>
+      <viewDate>2025-05-28 00:00:00</viewDate>
+      <vComment>hai</vComment>
+    </viewing>
+    <viewing>
+      <clientNo>CR02</clientNo>
+      <propertyNo>PB07</propertyNo>
+      <viewDate>2025-05-29 00:00:00</viewDate>
+      <vComment>test</vComment>
+    </viewing>
+    <viewing>
+      <clientNo>CR04</clientNo>
+      <propertyNo>PB07</propertyNo>
+      <viewDate>2025-05-29 00:00:00</viewDate>
+      <vComment>BEAUTIFUL!</vComment>
+    </viewing>
+  </viewings>
+  <rents>
+    <rent>
+      <rentNo>1748338429</rentNo>
+      <clientNo>CR02</clientNo>
+      <propertyNo>PB07</propertyNo>
+      <rentStart>2025-05-27</rentStart>
+      <rentEnd>2026-05-27</rentEnd>
+    </rent>
+  </rents>
+</data>

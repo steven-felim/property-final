@@ -47,5 +47,6 @@ $dom->loadXML($xml->asXML());
 file_put_contents('../XML/rented-properties.xml', $dom->saveXML());
 
 echo "XML exported to ../XML/rented-properties.xml";
+echo "<br><a href='xml-admin-report.php'>Back to Admin Report</a>";
 $conn->close();
 ?>

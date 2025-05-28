@@ -58,6 +58,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
             <li><a href="../XML/viewing-rent.xml" download>Viewing & Rent XML</a></li>
             <li><a href="../XML/properties.xml" download>Properties Feed XML</a></li>
         </ul>
+        <a href="staff.php" class="btn-back-staff">← Back to Staff Dashboard</a>
     </div>
 </body>
 </html>

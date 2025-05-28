@@ -785,7 +785,7 @@ body.register-page {
     text-decoration: underline;
 }
 
-/* Tambahan jika diperlukan untuk konsistensi */
+/* Edit Profile Form */
 .edit-profile-form .form-group {
     margin-bottom: 20px;
     display: flex;
@@ -809,7 +809,7 @@ body.register-page {
     box-sizing: border-box;
 }
 
-/* Radio button group for sex field */
+/* Radio button group for sex field edit profile */
 .sex-radio-group {
     display: flex;
     gap: 24px;
@@ -827,4 +827,22 @@ body.register-page {
 
 .sex-radio-group input[type="radio"] {
     margin-right: 6px;
+}
+
+/* Button Back to Staff Dashboard from XML Page */
+.btn-back-staff {
+    display: inline-block;
+    margin-top: 24px;
+    padding: 10px 22px;
+    background: #3498db;
+    color: #fff !important;
+    border-radius: 5px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: background 0.2s;
+    box-shadow: 0 2px 8px rgba(52,152,219,0.08);
+}
+.btn-back-staff:hover {
+    background: #217dbb;
+    color: #fff;
 }

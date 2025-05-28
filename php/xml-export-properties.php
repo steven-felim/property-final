@@ -21,5 +21,6 @@ $dom->loadXML($xml->asXML());
 file_put_contents('../XML/export-properties.xml', $dom->saveXML());
 
 echo "XML exported to ../XML/export-properties.xml";
+echo "<br><a href='xml-admin-report.php'>Back to Admin Report</a>";
 $conn->close();
 ?>
