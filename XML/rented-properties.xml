@@ -1,0 +1,24 @@
+<?xml version="1.0"?>
+<rentedProperties>
+  <property>
+    <propertyNo>PB07</propertyNo>
+    <street>Scarlet Regency</street>
+    <city>Jakarta</city>
+    <rent>65535</rent>
+    <type>Apartment</type>
+    <owner>
+      <ownerNo>CO02</ownerNo>
+      <fName>Alicia</fName>
+      <lName>Ataraxia</lName>
+      <email>c@gmail.com</email>
+    </owner>
+    <client>
+      <clientNo>CR02</clientNo>
+      <fName>John</fName>
+      <lName>Doe</lName>
+      <email>qwerty@email.com</email>
+    </client>
+    <rentStart>2025-05-27</rentStart>
+    <rentEnd>2026-05-27</rentEnd>
+  </property>
+</rentedProperties>

@@ -68,7 +68,6 @@
         </div>
     </footer>
     <script>
-        // Support both ?propertyNo=... and ?id=...
         const urlParams = new URLSearchParams(window.location.search);
         let propertyNo = urlParams.get('propertyNo');
         if (!propertyNo) propertyNo = urlParams.get('id');

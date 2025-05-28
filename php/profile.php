@@ -144,7 +144,7 @@ if ($userRole === 'property_owner' && $ownerNo) {
                 <ul>
                     <?php if($userRole === 'staff'): ?>
                         <li><a href="staff.php">Home</a></li>
-                        <li><a href=#>Staff Dashboard</a></li>
+                        <li><a href=staff.php>Staff Dashboard</a></li>
                     <?php else: ?>
                         <li><a href="homepage.php">Home</a></li>
                     <?php endif; ?>

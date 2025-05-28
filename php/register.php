@@ -19,7 +19,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     // Hash password
     $hashedPassword = password_hash($password, PASSWORD_DEFAULT);
 
-    $email = mb_convert_encoding($email, 'UTF-8', 'UTF-8'); // Normalize encoding    // Check if email exists in any table
+    $email = mb_convert_encoding($email, 'UTF-8', 'UTF-8'); // Check if email exists in any table
     $checkEmailQuery = "SELECT eMail FROM cclient WHERE eMail = ? UNION SELECT eMail FROM privateowner WHERE eMail = ? UNION SELECT email FROM staff WHERE email = ?";
 
     $stmt = $conn->prepare($checkEmailQuery);
@@ -28,7 +28,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
     $result = $stmt->get_result();
     if ($result->num_rows > 0) {
         $error = "Email already exists.";
-    } else {        // Role to table mapping
+    } else {
         $tableMap = [
             "client" => ["table" => "cclient", "id_column" => "clientNo"],
             "property_owner" => ["table" => "privateowner", "id_column" => "ownerNo"],
@@ -86,7 +86,6 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("ssssss", $newId, $firstName, $lastName, $email, $hashedPassword, $telNo);
             } else {
-                // staff (jika ada)
                 $sql = "INSERT INTO {$tableName} ($idColumn, fname, lname, email, password) VALUES (?, ?, ?, ?, ?)";
                 $stmt = $conn->prepare($sql);
                 $stmt->bind_param("sssss", $newId, $firstName, $lastName, $email, $hashedPassword);
@@ -95,7 +94,7 @@ if ($_SERVER["REQUEST_METHOD"] === "POST") {
             if ($stmt->execute()) {
                 $_SESSION['user_email'] = $email;
                 $_SESSION['user_role'] = $role;
-                $_SESSION['user_name'] = $firstName . ' ' . $lastName; // Set user name in session for alert
+                $_SESSION['user_name'] = $firstName . ' ' . $lastName;
                 header("Location: homepage.php");
                 exit();
             } else {

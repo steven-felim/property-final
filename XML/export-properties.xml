@@ -1,0 +1,52 @@
+<?xml version="1.0"?>
+<properties>
+  <property>
+    <propertyNo>PB00</propertyNo>
+    <street>caheum</street>
+    <city>bandung</city>
+    <rent>999</rent>
+    <type>villa</type>
+  </property>
+  <property>
+    <propertyNo>PB01</propertyNo>
+    <street>caheum</street>
+    <city>bandung</city>
+    <rent>999</rent>
+    <type>villa</type>
+  </property>
+  <property>
+    <propertyNo>PB03</propertyNo>
+    <street>caheum</street>
+    <city>bandung</city>
+    <rent>999</rent>
+    <type>kos</type>
+  </property>
+  <property>
+    <propertyNo>PB05</propertyNo>
+    <street>opal</street>
+    <city>Surabaya</city>
+    <rent>799</rent>
+    <type>house</type>
+  </property>
+  <property>
+    <propertyNo>PB06</propertyNo>
+    <street>Jl. gunung atas</street>
+    <city>Bandung</city>
+    <rent>65535</rent>
+    <type>Villa</type>
+  </property>
+  <property>
+    <propertyNo>PB07</propertyNo>
+    <street>Scarlet Regency</street>
+    <city>Jakarta</city>
+    <rent>65535</rent>
+    <type>Apartment</type>
+  </property>
+  <property>
+    <propertyNo>PB08</propertyNo>
+    <street>dimana aja</street>
+    <city>Jakarta</city>
+    <rent>65535</rent>
+    <type>house</type>
+  </property>
+</properties>

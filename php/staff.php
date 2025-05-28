@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once './db_connection.php';
-// Cek login
+
 if (!isset($_SESSION['user_email']) && $_SESSION['user_role'] == 'staff') {
     header("Location: index.php");
     exit();
@@ -38,7 +38,7 @@ while ($row = $res->fetch_assoc())
 $registerMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_client'])) {
     $clientNo = $_POST['clientNo'];
-    $ownerNo = $_POST['ownerNo'];    // Assign client to owner's property (example: update registration table)
+    $ownerNo = $_POST['ownerNo'];    // Assign client to owner's property
     $sql = "UPDATE registration SET branchNo = (SELECT branchNo FROM propertyforrent WHERE ownerNo = ? LIMIT 1) WHERE clientNo = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $ownerNo, $clientNo);
@@ -163,9 +163,12 @@ if (isset($_GET['ajax_staff_search'])) {
                 <ul>
                     <?php if($userRole === 'staff'): ?>
                         <li><a href="staff.php">Home</a></li>
-                        <li><a href=#>Staff Dashboard</a></li>
+                        <li><a href="staff.php">Staff Dashboard</a></li>
                     <?php else: ?>
                         <li><a href="homepage.php">Home</a></li>
+                    <?php endif; ?>
+                    <?php if (($postition ?? '') === 'admin'): ?>
+                        <li><a href="xml-admin-report.php">XML Report</a></li>
                     <?php endif; ?>
                     <li><a href="properties.php">Properties</a></li>
                     <?php if (in_array($userRole, ['staff', 'property_owner'])): ?>
@@ -288,7 +291,11 @@ if (isset($_GET['ajax_staff_search'])) {
                                 <form method="post" style="display:inline;">
                                     <input type="hidden" name="remove_staff" value="1">
                                     <input type="hidden" name="staffNo" value="<?php echo htmlspecialchars($s['staffNo']); ?>">
-                                    <button type="submit" onclick="return confirm('Are you sure you want to remove this staff?');">Remove</button>
+                                    <button type="submit" class="btn-remove-staff" onclick="return confirm('Are you sure you want to remove this staff?');">Remove</button>
+                                </form>
+                                <form method="get" action="edit-profileStaff.php" style="display:inline;">
+                                    <input type="hidden" name="staffNo" value="<?php echo htmlspecialchars($s['staffNo']); ?>">
+                                    <button type="submit" class="btn-edit-staff">Edit</button>
                                 </form>
                             </td>
                         </tr>

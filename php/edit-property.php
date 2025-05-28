@@ -22,7 +22,7 @@ if (!$ownerNo) {
     die('Owner not found.');
 }
 
-// Get propertyNo from GET
+// Get propertyNo 
 if (!isset($_GET['propertyNo'])) {
     die('No property specified.');
 }

@@ -1,5 +1,4 @@
 <?php
-// filepath: c:\xampp\htdocs\SBD\property\php\submit-comment.php
 session_start();
 require_once './db_connection.php';
 

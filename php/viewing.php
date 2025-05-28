@@ -9,13 +9,42 @@
     $userEmail = $_SESSION['user_email'];
     $userRole = $_SESSION['user_role'];
     require_once './db_connection.php';
-    // Fetch all properties with their images
+
     $properties = [];
-    $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, pi.image FROM propertyforrent p LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo ORDER BY p.propertyNo DESC";
-    $result = $conn->query($sql);
-    if ($result) {
-        while ($row = $result->fetch_assoc()) {
-            $properties[] = $row;
+    if ($userRole === 'property_owner') {
+        // Ambil ownerNo berdasarkan email login
+        $ownerEmail = $conn->real_escape_string($userEmail);
+        $ownerNo = '';
+        $ownerResult = $conn->query("SELECT ownerNo FROM privateowner WHERE eMail = '$ownerEmail' LIMIT 1");
+        if ($ownerResult && $ownerResult->num_rows > 0) {
+            $ownerRow = $ownerResult->fetch_assoc();
+            $ownerNo = $ownerRow['ownerNo'];
+        }
+        // Jika ownerNo ditemukan, ambil properti miliknya (hanya satu gambar per properti)
+        if ($ownerNo) {
+            $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType,
+                           (SELECT pi.image FROM propertyimage pi WHERE pi.propertyNo = p.propertyNo LIMIT 1) AS image
+                    FROM propertyforrent p
+                    WHERE p.ownerNo = '$ownerNo'
+                    ORDER BY p.propertyNo DESC";
+            $result = $conn->query($sql);
+            if ($result) {
+                while ($row = $result->fetch_assoc()) {
+                    $properties[] = $row;
+                }
+            }
+        }
+    } else {
+        // Staff bisa lihat semua properti (hanya satu gambar per properti)
+        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType,
+                       (SELECT pi.image FROM propertyimage pi WHERE pi.propertyNo = p.propertyNo LIMIT 1) AS image
+                FROM propertyforrent p
+                ORDER BY p.propertyNo DESC";
+        $result = $conn->query($sql);
+        if ($result) {
+            while ($row = $result->fetch_assoc()) {
+                $properties[] = $row;
+            }
         }
     }
     $conn->close();
