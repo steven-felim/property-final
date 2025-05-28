@@ -2,7 +2,7 @@
 session_start();
 require_once './db_connection.php';
 
-// Hanya admin yang boleh akses
+// Admin only access
 if (!isset($_SESSION['user_email']) || ($_SESSION['sPosition'] ?? '') !== 'admin') {
     header("Location: index.php");
     exit();
@@ -14,7 +14,7 @@ if (!$staffNo) {
     exit();
 }
 
-// Ambil data staff
+// Fetch data staff
 $stmt = $conn->prepare("SELECT staffNo, fName, lName, eMail, sPosition, salary, sex, DOB FROM staff WHERE staffNo = ?");
 $stmt->bind_param("s", $staffNo);
 $stmt->execute();

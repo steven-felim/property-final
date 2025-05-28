@@ -14,7 +14,6 @@ $rentMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $userRole === 'client') {
     $propertyId = $_POST['property_id'];
     
-    // Get clientNo
     $stmt = $conn->prepare("SELECT clientNo FROM cclient WHERE eMail = ?");
     $stmt->bind_param("s", $userEmail);
     $stmt->execute();
@@ -22,7 +21,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
     $stmt->fetch();
     $stmt->close();
     
-    // Check if this property is already rented by this client
+    // Check if THE property is already rented by THE client
     $stmt = $conn->prepare("SELECT rentNo FROM rent WHERE clientNo = ? AND propertyNo = ?");
     $stmt->bind_param("ss", $clientNo, $propertyId);
     $stmt->execute();
@@ -58,7 +57,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['rent_property']) && $
         
         if ($stmt->num_rows == 0) {
             $stmt->close();
-            // Insert into registration
             $dateJoined = date('Y-m-d');
             $stmt = $conn->prepare("INSERT INTO registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
             $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
@@ -252,7 +250,7 @@ if (isset($_GET['all_comments'])) {
         .then(res => res.json())
         .then(data => {
             images = data;
-            updateCarousel(); // this will automatically show fallback if empty
+            updateCarousel();
         })
         .catch(error => {
             console.error("Image fetch failed:", error);
@@ -260,7 +258,6 @@ if (isset($_GET['all_comments'])) {
             document.getElementById('carousel-image').alt = "No Image Available";
         });
 
-    // Update image path to use ../img/ instead of ../uploads/
     function updateCarousel() {
         if (images.length === 0) {
             document.getElementById('carousel-image').src = "../img/no-image-available.png";
@@ -324,8 +321,8 @@ if (isset($_GET['all_comments'])) {
         .then(res => res.text())
         .then(data => {
             document.getElementById('comment-message').textContent = data;
-            loadComments(); // Reload comments
-            document.getElementById('comment-text').value = ''; // Clear textarea
+            loadComments(); 
+            document.getElementById('comment-text').value = ''; 
         })
         .catch(() => {
             document.getElementById('comment-message').textContent = "Failed to submit comment.";

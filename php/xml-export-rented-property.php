@@ -3,7 +3,6 @@ require_once './db_connection.php';
 
 $xml = new SimpleXMLElement('<rentedProperties/>');
 
-// Ambil properti yang sudah dirental beserta owner & client
 $sql = "SELECT 
             p.propertyNo, p.street, p.city, p.rent, p.pType,
             o.ownerNo, o.fName AS ownerFName, o.lName AS ownerLName, o.eMail AS ownerEmail,
@@ -39,7 +38,6 @@ while ($row = $result->fetch_assoc()) {
     $property->addChild('rentEnd', $row['rentEnd']);
 }
 
-// Format dengan DOMDocument agar rapi
 $dom = new DOMDocument('1.0');
 $dom->preserveWhiteSpace = false;
 $dom->formatOutput = true;

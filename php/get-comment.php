@@ -1,5 +1,4 @@
 <?php
-// filepath: c:\xampp\htdocs\SBD\property\php\get-comments.php
 require_once './db_connection.php';
 $propertyId = $_GET['property_id'] ?? '';
 $comments = [];

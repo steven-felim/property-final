@@ -45,11 +45,10 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 }
             }
         }
-    }    // Generate propertyNo format PB01, PB02, dst
+    }    // Generate propertyNo format PBxx
     $result = $conn->query("SELECT propertyNo FROM propertyforrent WHERE propertyNo LIKE 'PB%' ORDER BY propertyNo DESC LIMIT 1");
     $lastNo = 0;
     if ($result && $row = $result->fetch_assoc()) {
-        // Ambil angka dari propertyNo terakhir, misal PB07 -> 7
         $lastNo = intval(substr($row['propertyNo'], 2));
     }
     $newNo = $lastNo + 1;
@@ -72,7 +71,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
 }
 $conn->close();
 
-// Show the add property form if not POST
 // Fetch branches for dropdown
 $branches = [];
 require './db_connection.php';

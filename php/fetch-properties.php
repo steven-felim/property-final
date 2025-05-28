@@ -8,7 +8,6 @@ $userRole = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : null;
 $properties = [];
 
 if ($userRole === 'property_owner' && $userEmail) {
-    // Ambil ownerNo berdasarkan email login
     $ownerEmail = $conn->real_escape_string($userEmail);
     $ownerNo = '';
     $ownerResult = $conn->query("SELECT ownerNo FROM privateowner WHERE eMail = '$ownerEmail' LIMIT 1");

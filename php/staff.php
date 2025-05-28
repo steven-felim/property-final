@@ -1,7 +1,7 @@
 <?php
 session_start();
 require_once './db_connection.php';
-// Cek login
+
 if (!isset($_SESSION['user_email']) && $_SESSION['user_role'] == 'staff') {
     header("Location: index.php");
     exit();
@@ -38,7 +38,7 @@ while ($row = $res->fetch_assoc())
 $registerMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_client'])) {
     $clientNo = $_POST['clientNo'];
-    $ownerNo = $_POST['ownerNo'];    // Assign client to owner's property (example: update registration table)
+    $ownerNo = $_POST['ownerNo'];    // Assign client to owner's property
     $sql = "UPDATE registration SET branchNo = (SELECT branchNo FROM propertyforrent WHERE ownerNo = ? LIMIT 1) WHERE clientNo = ?";
     $stmt = $conn->prepare($sql);
     $stmt->bind_param("ss", $ownerNo, $clientNo);

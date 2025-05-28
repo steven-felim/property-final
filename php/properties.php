@@ -37,7 +37,7 @@
             $properties[] = $row;
         }
     }
-    // Do not close $conn yet, as we may need it for other actions
+    // jangan close $conn dulu, bisi dipake lagi
 ?>
 
 <!DOCTYPE html>

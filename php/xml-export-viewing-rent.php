@@ -26,7 +26,6 @@ while ($row = $res->fetch_assoc()) {
     $r->addChild('rentEnd', $row['rentEnd']);
 }
 
-// Format dengan DOMDocument agar rapi
 $dom = new DOMDocument('1.0');
 $dom->preserveWhiteSpace = false;
 $dom->formatOutput = true;

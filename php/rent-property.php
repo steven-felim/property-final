@@ -8,8 +8,8 @@ if (!isset($_SESSION['user_email']) || $_SESSION['user_role'] !== 'client') {
 }
 
 $clientEmail = $_SESSION['user_email'];
-$propertyNo = $_POST['propertyNo']; // property yang disewa
-$staffNo = $_POST['staffNo']; // staff yang melakukan proses (bisa dari session staff)
+$propertyNo = $_POST['propertyNo']; 
+$staffNo = $_POST['staffNo']; 
 $dateJoined = date('Y-m-d');
 
 // Ambil clientNo dari email
