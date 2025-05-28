@@ -23,30 +23,18 @@
 
     // Fetch all properties with their images and ownerNo
     $properties = [];
-    if ($userRole === 'property_owner' && $myOwnerNo) {        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
-                FROM propertyforrent p 
-                LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo 
-                WHERE p.ownerNo = ? 
-                ORDER BY p.propertyNo DESC";
-        $stmt = $conn->prepare($sql);
-        $stmt->bind_param("s", $myOwnerNo);
-        $stmt->execute();
-        $result = $stmt->get_result();
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $properties[] = $row;
-            }
-        }
-        $stmt->close();
-    } else {        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo, pi.image 
-                FROM propertyforrent p 
-                LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo 
-                ORDER BY p.propertyNo DESC";
-        $result = $conn->query($sql);
-        if ($result) {
-            while ($row = $result->fetch_assoc()) {
-                $properties[] = $row;
-            }
+    $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, p.ownerNo,
+            (SELECT pi.image FROM propertyimage pi WHERE pi.propertyNo = p.propertyNo LIMIT 1) AS image
+            FROM propertyforrent p
+            WHERE p.ownerNo = ?
+            ORDER BY p.propertyNo DESC";
+    $stmt = $conn->prepare($sql);
+    $stmt->bind_param("s", $myOwnerNo);
+    $stmt->execute();
+    $result = $stmt->get_result();
+    if ($result) {
+        while ($row = $result->fetch_assoc()) {
+            $properties[] = $row;
         }
     }
     // Do not close $conn yet, as we may need it for other actions

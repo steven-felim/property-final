@@ -834,7 +834,7 @@ body.register-page {
     display: inline-block;
     margin-top: 24px;
     padding: 10px 22px;
-    background: #3498db;
+    background: #555;
     color: #fff !important;
     border-radius: 5px;
     text-decoration: none;
@@ -843,6 +843,6 @@ body.register-page {
     box-shadow: 0 2px 8px rgba(52,152,219,0.08);
 }
 .btn-back-staff:hover {
-    background: #217dbb;
+    background: #555;
     color: #fff;
 }
