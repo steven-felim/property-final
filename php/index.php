@@ -68,45 +68,55 @@
     }
 ?>
 
-
 <!DOCTYPE html>
 <html lang="en">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Log In</title>
+    <title>Sign In - HBProperty</title>
     <link rel="stylesheet" href="../css/styles.css">
 </head>
 <body class="register-page">
     <div class="register-container">
-        <h2>Log In</h2>
+        <div class="register-brand">
+            <h2>Welcome Back</h2>
+            <p>Sign in to your HBProperty account</p>
+        </div>
+
         <?php if (!empty($error)): ?>
-            <div id="notification" class="notification error">
+            <div class="error-message">
                 <?php echo htmlspecialchars($error); ?>
             </div>
         <?php endif; ?>
-        <form action="" method="POST">
+
+        <form action="" method="POST" class="auth-form">
             <div class="form-group">
-                <label for="email">Email</label>
-                <input type="email" id="email" name="email" required>
+                <label for="email">Email Address</label>
+                <input type="email" id="email" name="email" required placeholder="Enter your email address" value="<?php echo isset($_POST['email']) ? htmlspecialchars($_POST['email']) : ''; ?>">
             </div>
+            
             <div class="form-group">
                 <label for="password">Password</label>
-                <input type="password" id="password" name="password" required>
+                <input type="password" id="password" name="password" required placeholder="Enter your password">
             </div>
+            
             <div class="form-group">
                 <label for="role">Login as</label>
                 <select id="role" name="role" required>
-                    <option value="client">Client</option>
-                    <option value="property_owner">Property Owner</option>
-                    <option value="staff">Staff</option>
+                    <option value="">Select your role</option>
+                    <option value="client" <?php echo (isset($_POST['role']) && $_POST['role'] === 'client') ? 'selected' : ''; ?>>Client - Looking for properties</option>
+                    <option value="property_owner" <?php echo (isset($_POST['role']) && $_POST['role'] === 'property_owner') ? 'selected' : ''; ?>>Property Owner - List my properties</option>
+                    <option value="staff" <?php echo (isset($_POST['role']) && $_POST['role'] === 'staff') ? 'selected' : ''; ?>>Staff - Administrative access</option>
                 </select>
             </div>
+            
             <div class="form-group">
-                <button type="submit">Log In</button>
+                <button type="submit" class="btn-login">Sign In</button>
             </div>
-            <div class="form-group">
-                <p>Don't have an account? <a href="register.php">Sign up here!</a></p>
+            
+            <div class="auth-links">
+                <p>Don't have an account? <a href="register.php">Create one here</a></p>
+                <p><a href="forgot-password.php">Forgot your password?</a></p>
             </div>
         </form>
     </div>

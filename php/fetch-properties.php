@@ -1,54 +1,58 @@
 <?php
-session_start();
+// Simple test version to debug the issue
+header('Content-Type: application/json');
+header('Access-Control-Allow-Origin: *');
+
+// Test if this file is being accessed
+error_log("TEST - fetch-properties.php accessed at " . date('Y-m-d H:i:s'));
+
+// Test database connection
 require_once './db_connection.php';
 
-$userEmail = isset($_SESSION['user_email']) ? $_SESSION['user_email'] : null;
-$userRole = isset($_SESSION['user_role']) ? $_SESSION['user_role'] : null;
+if ($conn->connect_error) {
+    echo json_encode(["error" => "Database connection failed: " . $conn->connect_error]);
+    exit;
+}
+
+// Query to get properties with their first image
+$sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType,
+        (SELECT pi.image FROM propertyimage pi WHERE pi.propertyNo = p.propertyNo LIMIT 1) AS image
+        FROM propertyforrent p 
+        ORDER BY p.propertyNo DESC
+        LIMIT 12";
+
+$result = $conn->query($sql);
+
+if (!$result) {
+    echo json_encode(["error" => "Query failed: " . $conn->error]);
+    exit;
+}
 
 $properties = [];
-
-if ($userRole === 'property_owner' && $userEmail) {
-    $ownerEmail = $conn->real_escape_string($userEmail);
-    $ownerNo = '';
-    $ownerResult = $conn->query("SELECT ownerNo FROM privateowner WHERE eMail = '$ownerEmail' LIMIT 1");
-    if ($ownerResult && $ownerResult->num_rows > 0) {
-        $ownerRow = $ownerResult->fetch_assoc();
-        $ownerNo = $ownerRow['ownerNo'];
+while ($row = $result->fetch_assoc()) {
+    // Determine image URL
+    $imageUrl = '../img/no-image-available.png'; // Default fallback
+    
+    if ($row['image']) {
+        // Check if image file exists
+        $imagePath = '../img/' . $row['image'];
+        if (file_exists($imagePath)) {
+            $imageUrl = $imagePath;
+        }
     }
-    if ($ownerNo) {
-        $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, pi.image
-                FROM propertyforrent p
-                LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo
-                WHERE p.ownerNo = '$ownerNo'
-                ORDER BY p.propertyNo DESC";
-    } else {
-        $sql = null;
-    }
-} else {
-    // Staff atau guest: tampilkan semua properti
-    $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType, pi.image
-            FROM propertyforrent p
-            LEFT JOIN propertyimage pi ON p.propertyNo = pi.propertyNo
-            ORDER BY p.propertyNo DESC";
+    
+    $properties[] = [
+        'propertyNo' => $row['propertyNo'],
+        'title' => $row['pType'] . ' - ' . $row['street'] . ', ' . $row['city'],
+        'price' => number_format($row['rent'], 0, ',', '.'),
+        'image_url' => $imageUrl,
+        'pType' => $row['pType'],
+        'street' => $row['street'],
+        'city' => $row['city'],
+        'rent' => $row['rent']
+    ];
 }
 
-if ($sql) {
-    $result = $conn->query($sql);
-    while ($row = $result->fetch_assoc()) {
-        $image_url = $row['image']
-            ? '../img/' . $row['image']
-            : '../img/no-image-available.png';
-
-        $properties[] = [
-            'propertyNo' => $row['propertyNo'],
-            'title' => $row['pType'] . ' - ' . $row['street'] . ', ' . $row['city'],
-            'price' => number_format($row['rent'], 0, ',', '.'),
-            'image_url' => $image_url
-        ];
-    }
-}
-
-header('Content-Type: application/json');
 echo json_encode($properties);
 $conn->close();
 ?>
