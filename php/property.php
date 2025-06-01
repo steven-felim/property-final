@@ -242,12 +242,36 @@ include_once './header.php';
                             </svg>
                             Rent This Property
                         </button>
-                        <button class="btn-secondary schedule-btn" onclick="openScheduleModal()">
-                            <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
-                                <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
-                            </svg>
-                            Schedule Viewing
-                        </button>
+                        <?php
+                        // Check if the client has already scheduled a viewing for this property
+                        $hasViewing = false;
+                        if ($userRole === 'client' && !empty($propertyId)) {
+                            $stmt = $conn->prepare("SELECT COUNT(*) FROM viewing v JOIN cclient c ON v.clientNo = c.clientNo WHERE c.eMail = ? AND v.propertyNo = ?");
+                            $stmt->bind_param("ss", $userEmail, $propertyId);
+                            $stmt->execute();
+                            $stmt->bind_result($viewingCount);
+                            $stmt->fetch();
+                            $hasViewing = $viewingCount > 0;
+                            $stmt->close();
+                        }
+                        ?>
+
+                        <?php if ($hasViewing): ?>
+                            <button class="btn-secondary schedule-btn" onclick="openScheduleModal()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
+                                    <path d="M12 8v4l3 3 1-1-2-2V8z"/>
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm0 16H5V8h14v11z"/>
+                                </svg>
+                                Reschedule Viewing
+                            </button>
+                        <?php else: ?>
+                            <button class="btn-secondary schedule-btn" onclick="openScheduleModal()">
+                                <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor" style="margin-right: 8px;">
+                                    <path d="M19 3h-1V1h-2v2H8V1H6v2H5c-1.11 0-1.99.9-1.99 2L3 19c0 1.1.89 2 2 2h14c1.11 0 2-.9 2-2V5c0-1.1-.89-2-2-2zm0 16H5V8h14v11zM7 10h5v5H7z"/>
+                                </svg>
+                                Schedule Viewing
+                            </button>
+                        <?php endif; ?>
                     <?php endif; ?>
                     
                     <button class="btn-outline share-btn" onclick="shareProperty()">
@@ -421,41 +445,13 @@ include_once './header.php';
                     </div>
                     <div class="step-actions">
                         <button type="button" class="btn-prev" onclick="prevStep()">Previous</button>
-                        <button type="button" class="btn-next" onclick="nextStep()">Next Step</button>
+                        <button type="button" class="btn-next" onclick="reviewBooking()">Next Step</button>
                     </div>
                 </div>
 
                 <div class="form-step" id="step-3">
                     <h4 class="step-title">
                         <span class="step-number">3</span>
-                        Additional Information
-                    </h4>
-                    <div class="additional-info">
-                        <div class="form-group">
-                            <label for="viewing-contact">Contact Number:</label>
-                            <input type="tel" id="viewing-contact" name="contact_number" placeholder="Your phone number for confirmation" required>
-                        </div>
-                        <div class="form-group">
-                            <label for="viewing-notes">Special Requests (Optional):</label>
-                            <textarea id="viewing-notes" name="notes" rows="4" placeholder="Any specific areas you'd like to focus on, accessibility needs, or questions you have..."></textarea>
-                        </div>
-                        <div class="form-group">
-                            <label class="checkbox-label">
-                                <input type="checkbox" name="bring_documents" value="1">
-                                <span class="checkmark"></span>
-                                I will bring necessary documents (ID, proof of income if interested)
-                            </label>
-                        </div>
-                    </div>
-                    <div class="step-actions">
-                        <button type="button" class="btn-prev" onclick="prevStep()">Previous</button>
-                        <button type="button" class="btn-next" onclick="reviewBooking()">Review Booking</button>
-                    </div>
-                </div>
-
-                <div class="form-step" id="step-4">
-                    <h4 class="step-title">
-                        <span class="step-number">4</span>
                         Confirm Your Booking
                     </h4>
                     <div class="booking-summary">
@@ -524,11 +520,6 @@ include_once './header.php';
                         <span class="step-label">Time</span>
                     </div>
                     <div class="progress-step" data-step="3">
-                        <span class="step-dot"></span>
-                        <span class="step-label">Details</span>
-                    </div>
-                    <div class="progress-step" data-step="4">
-                        <span class="step-dot"></span>
                         <span class="step-label">Confirm</span>
                     </div>
                 </div>
@@ -828,7 +819,7 @@ include_once './header.php';
 
     // Schedule Viewing Modal Script
     let currentStep = 1;
-    const totalSteps = 4;
+    const totalSteps = 3;
 
     function nextStep() {
         if (!validateCurrentStep()) {
@@ -887,23 +878,6 @@ include_once './header.php';
             return true;
         }
         
-        if (currentStep === 3) {
-            const contactInput = document.getElementById('viewing-contact');
-            if (!contactInput.value.trim()) {
-                showValidationError('Please enter your contact number.');
-                return false;
-            }
-            
-            // Basic phone number validation
-            const phoneRegex = /^[\d\s\-\+\(\)]+$/;
-            if (!phoneRegex.test(contactInput.value.trim())) {
-                showValidationError('Please enter a valid phone number.');
-                return false;
-            }
-            
-            return true;
-        }
-        
         return true;
     }
 
@@ -942,7 +916,6 @@ include_once './header.php';
 
         const date = document.getElementById('viewing-date').value;
         const time = document.getElementById('selected-time').value;
-        const contact = document.getElementById('viewing-contact').value;
 
         // Update summary display
         const dateObj = new Date(date);
@@ -961,7 +934,22 @@ include_once './header.php';
             hour12: true
         });
         
-        document.getElementById('summary-contact').textContent = contact;
+        // Fetch client contact (telNo) from PHP variable injected into the page
+        <?php
+            // Get telNo for the logged-in client
+            $clientTelNo = '-';
+            if ($userRole === 'client') {
+            $stmt = $conn->prepare("SELECT telNo FROM cclient WHERE eMail = ?");
+            $stmt->bind_param("s", $userEmail);
+            $stmt->execute();
+            $stmt->bind_result($telNo);
+            if ($stmt->fetch()) {
+                $clientTelNo = $telNo;
+            }
+            $stmt->close();
+            }
+        ?>
+        document.getElementById('summary-contact').textContent = <?php echo json_encode($clientTelNo); ?> || '-';
 
         nextStep();
     }
