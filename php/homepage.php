@@ -254,10 +254,6 @@ class PropertyManager {
             <div class="property-content">
                 <h3>${property.title}</h3>
                 <p class="property-price">$${property.price}/month</p>
-                <div class="property-features">
-                    <span class="feature-item">📍 Prime Location</span>
-                    <span class="feature-item">🏠 Fully Furnished</span>
-                </div>
                 <a href="property.php?id=${property.propertyNo}" class="btn-view-details">
                     View Details
                 </a>

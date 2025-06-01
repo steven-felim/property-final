@@ -16,10 +16,19 @@ if ($conn->connect_error) {
 
 // Query to get properties with their first image
 $sql = "SELECT p.propertyNo, p.street, p.city, p.rent, p.pType,
-        (SELECT pi.image FROM propertyimage pi WHERE pi.propertyNo = p.propertyNo LIMIT 1) AS image
-        FROM propertyforrent p 
+            (SELECT pi.image 
+                FROM propertyimage pi 
+                WHERE pi.propertyNo = p.propertyNo 
+                LIMIT 1) AS image
+        FROM propertyforrent p
+        WHERE NOT EXISTS (
+            SELECT 1 
+            FROM rent r 
+            WHERE r.propertyNo = p.propertyNo
+        )
         ORDER BY p.propertyNo DESC
-        LIMIT 12";
+        LIMIT 6;
+";
 
 $result = $conn->query($sql);
 

@@ -69,7 +69,11 @@
                 break;
         }
         
-        $sql = "SELECT propertyNo, pType, street, city, rooms, rent, ownerNo FROM propertyforrent WHERE $whereClause ORDER BY $orderBy LIMIT ? OFFSET ?";
+        $sql = "SELECT propertyNo, pType, street, city, rooms, rent, ownerNo 
+            FROM propertyforrent 
+            WHERE $whereClause AND propertyNo NOT IN (SELECT propertyNo FROM rent) 
+            ORDER BY $orderBy 
+            LIMIT ? OFFSET ?";
         $params[] = $limit;
         $params[] = $offset;
         $types .= "ii";
@@ -85,7 +89,9 @@
         }
         
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) as total FROM propertyforrent WHERE $whereClause";
+        $countSql = "SELECT COUNT(*) as total 
+             FROM propertyforrent 
+             WHERE $whereClause AND propertyNo NOT IN (SELECT propertyNo FROM rent)";
         $countStmt = $conn->prepare($countSql);
         $countParams = array_slice($params, 0, -2); // Remove limit and offset
         $countTypes = substr($types, 0, -2);
