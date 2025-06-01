@@ -54,9 +54,11 @@
                             header("Location: homepage.php");
                         }
                         exit();
+                    } else {
+                        $error = "Email or password is incorrect.";
                     }
                 } else {
-                    $error = "Email or password is incorrect.";
+                    $error = "Email, password, or role is incorrect.";
                 }
                 $stmt->close();
             } else {

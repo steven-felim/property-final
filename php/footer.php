@@ -19,7 +19,7 @@
                 </div>
             </div>
             <div class="footer-bottom">
-                <p>&copy; 2025 HBProperty | All Rights Reserved</p>
+                <p>&copy; 2025 HBProperty | All Rights Reserved | <a href="about.php" aria-label="About Us">About Us</a></p>
             </div>
         <?php endif; ?>
     </div>

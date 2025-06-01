@@ -12,17 +12,18 @@
 
     if (isset($_GET['ajax'])) {
         $page = isset($_GET['page']) ? (int)$_GET['page'] : 1;
-        $type = isset($_GET['type']) ? $_GET['type'] : 'all';
-        $sort = isset($_GET['sort']) ? $_GET['sort'] : 'newest';
-        $search = isset($_GET['search']) ? trim($_GET['search']) : '';
-        $minPrice = isset($_GET['min_price']) ? (int)$_GET['min_price'] : 0;
-        $maxPrice = isset($_GET['max_price']) ? (int)$_GET['max_price'] : 999999;
-        
+        $type = $_GET['type'] ?? 'all';
+        $sort = $_GET['sort'] ?? 'newest';
+        $search = trim($_GET['search'] ?? '');
+        $minPrice = (int)($_GET['min_price'] ?? 0);
+        $maxPrice = (int)($_GET['max_price'] ?? 999999);
+
         $limit = 9;
         $offset = ($page - 1) * $limit;
-        
-       
+
         $myOwnerNoAjax = null;
+        $isOwner = false;
+
         if ($userRole === 'property_owner') {
             $stmt = $conn->prepare("SELECT ownerNo FROM privateowner WHERE eMail = ?");
             $stmt->bind_param("s", $userEmail);
@@ -30,76 +31,77 @@
             $stmt->bind_result($myOwnerNoAjax);
             $stmt->fetch();
             $stmt->close();
+            $isOwner = true;
         }
-        
-        
+
         $whereConditions = ["rent BETWEEN ? AND ?"];
         $params = [$minPrice, $maxPrice];
         $types = "ii";
-        
+
         if ($type !== 'all') {
             $whereConditions[] = "pType = ?";
             $params[] = $type;
             $types .= "s";
         }
-        
+
         if (!empty($search)) {
             $whereConditions[] = "(street LIKE ? OR city LIKE ? OR pType LIKE ?)";
             $searchParam = '%' . $search . '%';
             $params = array_merge($params, [$searchParam, $searchParam, $searchParam]);
             $types .= "sss";
         }
-        
-        $whereClause = implode(' AND ', $whereConditions);
-        
-        // Sort options
-        $orderBy = "propertyNo DESC"; // default
-        switch ($sort) {
-            case 'price_low':
-                $orderBy = "rent ASC";
-                break;
-            case 'price_high':
-                $orderBy = "rent DESC";
-                break;
-            case 'newest':
-                $orderBy = "propertyNo DESC";
-                break;
-            case 'oldest':
-                $orderBy = "propertyNo ASC";
-                break;
+
+        if ($isOwner) {
+            $whereConditions[] = "ownerNo = ?";
+            $params[] = $myOwnerNoAjax;
+            $types .= "s";
+        } else {
+            // Not an owner: show only properties not yet rented
+            $whereConditions[] = "propertyNo NOT IN (SELECT propertyNo FROM rent)";
         }
-        
-        $sql = "SELECT propertyNo, pType, street, city, rooms, rent, ownerNo 
-            FROM propertyforrent 
-            WHERE $whereClause AND propertyNo NOT IN (SELECT propertyNo FROM rent) 
-            ORDER BY $orderBy 
-            LIMIT ? OFFSET ?";
+
+        $whereClause = implode(' AND ', $whereConditions);
+
+        // Sorting logic
+        $orderBy = "propertyNo DESC";
+        switch ($sort) {
+            case 'price_low': $orderBy = "rent ASC"; break;
+            case 'price_high': $orderBy = "rent DESC"; break;
+            case 'oldest': $orderBy = "propertyNo ASC"; break;
+            default: $orderBy = "propertyNo DESC";
+        }
+
+        // Final SQL
+        $sql = "SELECT propertyNo, pType, street, city, rooms, rent, ownerNo
+                FROM propertyforrent
+                WHERE $whereClause
+                ORDER BY $orderBy
+                LIMIT ? OFFSET ?";
+
         $params[] = $limit;
         $params[] = $offset;
         $types .= "ii";
-        
+
         $stmt = $conn->prepare($sql);
         $stmt->bind_param($types, ...$params);
         $stmt->execute();
         $result = $stmt->get_result();
-        
+
         $properties = [];
         while ($row = $result->fetch_assoc()) {
             $properties[] = $row;
         }
-        
+
         // Get total count for pagination
-        $countSql = "SELECT COUNT(*) as total 
-             FROM propertyforrent 
-             WHERE $whereClause AND propertyNo NOT IN (SELECT propertyNo FROM rent)";
+        $countSql = "SELECT COUNT(*) as total FROM propertyforrent WHERE $whereClause";
         $countStmt = $conn->prepare($countSql);
-        $countParams = array_slice($params, 0, -2); // Remove limit and offset
+        $countParams = array_slice($params, 0, -2); // exclude limit and offset
         $countTypes = substr($types, 0, -2);
         $countStmt->bind_param($countTypes, ...$countParams);
         $countStmt->execute();
         $countResult = $countStmt->get_result();
         $totalCount = $countResult->fetch_assoc()['total'];
-        
+
         header('Content-Type: application/json');
         echo json_encode([
             'properties' => $properties,
@@ -107,7 +109,7 @@
             'currentPage' => $page,
             'totalPages' => ceil($totalCount / $limit),
             'hasMore' => ($page * $limit) < $totalCount,
-            'myOwnerNo' => $myOwnerNoAjax // Send ownerNo to frontend for button control
+            'myOwnerNo' => $myOwnerNoAjax
         ]);
         exit;
     }

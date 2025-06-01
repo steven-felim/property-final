@@ -34,7 +34,6 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $rooms = intval($_POST['rooms']);
     $pType = trim($_POST['pType']);
     $branchNo = $_POST['branchNo'];
-    $description = trim($_POST['description'] ?? '');
 
     // Validation
     if (empty($title) || empty($city) || empty($street) || empty($postcode) || empty($pType) || $price <= 0 || $rooms <= 0) {
@@ -52,7 +51,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                         $error_message = 'Only JPG, PNG, and GIF images are allowed.';
                         break;
                     }
-\
+
                     if ($_FILES['image']['size'][$key] > $maxFileSize) {
                         $error_message = 'Image size must be less than 5MB.';
                         break;
@@ -94,7 +93,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $success_message = 'Property added successfully! Property ID: ' . $propertyNo;
 
-                $title = $price = $city = $street = $postcode = $rooms = $pType = $branchNo = $description = '';
+                $title = $price = $city = $street = $postcode = $rooms = $pType = $branchNo = '';
             } else {
                 $error_message = 'Error adding property: ' . $stmt->error;
             }
@@ -232,15 +231,6 @@ $conn->close();
                                            min="1" step="0.01" placeholder="1500" required>
                                 </div>
                             </div>
-                        </div>
-
-                        <div class="form-group full-width">
-                            <label for="description">
-                                Property Description
-                                <span class="help-text">Detailed description of your property (optional)</span>
-                            </label>
-                            <textarea id="description" name="description" rows="4" 
-                                      placeholder="Describe your property's features, amenities, and unique selling points..."><?php echo htmlspecialchars($description ?? ''); ?></textarea>
                         </div>
                     </section>
 
