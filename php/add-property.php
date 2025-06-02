@@ -26,7 +26,6 @@ $success_message = '';
 $error_message = '';
 
 if ($_SERVER['REQUEST_METHOD'] === 'POST') {
-    $title = trim($_POST['title']);
     $price = floatval($_POST['price']);
     $city = trim($_POST['city']);
     $street = trim($_POST['street']);
@@ -36,7 +35,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
     $branchNo = $_POST['branchNo'];
 
     // Validation
-    if (empty($title) || empty($city) || empty($street) || empty($postcode) || empty($pType) || $price <= 0 || $rooms <= 0) {
+    if (empty($city) || empty($street) || empty($postcode) || empty($pType) || $price <= 0 || $rooms <= 0) {
         $error_message = 'Please fill in all required fields with valid values.';
     } else {
         // Handle multiple image upload
@@ -93,7 +92,7 @@ if ($_SERVER['REQUEST_METHOD'] === 'POST') {
                 
                 $success_message = 'Property added successfully! Property ID: ' . $propertyNo;
 
-                $title = $price = $city = $street = $postcode = $rooms = $pType = $branchNo = '';
+                $price = $city = $street = $postcode = $rooms = $pType = $branchNo = '';
             } else {
                 $error_message = 'Error adding property: ' . $stmt->error;
             }
@@ -187,15 +186,6 @@ $conn->close();
                         </h3>
                         
                         <div class="form-grid">
-                            <div class="form-group">
-                                <label for="title">
-                                    Property Title *
-                                    <span class="help-text">Descriptive name for your property</span>
-                                </label>
-                                <input type="text" id="title" name="title" value="<?php echo htmlspecialchars($title ?? ''); ?>" 
-                                       placeholder="e.g., Cozy 2BR Apartment in Downtown" required>
-                            </div>
-
                             <div class="form-group">
                                 <label for="pType">
                                     Property Type *
