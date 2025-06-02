@@ -160,12 +160,6 @@
         <div class="filters-section">
             <div class="filters-header">
                 <h3>Filter Properties</h3>
-                <button id="toggle-filters" class="btn-outline">
-                    <span>Show Filters</span>
-                    <svg width="20" height="20" viewBox="0 0 24 24" fill="currentColor">
-                        <path d="M7 10l5 5 5-5z"/>
-                    </svg>
-                </button>
             </div>
             
             <div id="filters-panel" class="filters-panel">
@@ -182,6 +176,9 @@
                         <option value="Apartment">Apartment</option>
                         <option value="Condo">Condo</option>
                         <option value="Studio">Studio</option>
+                        <option value="Villa">Villa</option>
+                        <option value="Townhouse">Townhouse</option>
+                        <option value="Kos">Kos</option>
                     </select>
                 </div>
                 
@@ -284,16 +281,6 @@ class PropertiesManager {
     }
 
     setupEventListeners() {
-        // Toggle filters
-        document.getElementById("toggle-filters").addEventListener("click", () => {
-            const panel = document.getElementById("filters-panel");
-            const btn = document.getElementById("toggle-filters");
-            const isVisible = panel.style.display === "block";
-            
-            panel.style.display = isVisible ? "none" : "block";
-            btn.querySelector("span").textContent = isVisible ? "Show Filters" : "Hide Filters";
-        });
-
         // Apply filters
         document.getElementById("apply-filters").addEventListener("click", () => {
             this.updateFilters();
@@ -599,10 +586,10 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 
 .filters-panel {
-    display: none;
+    display: grid;
     padding: 30px;
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     gap: 20px;
     align-items: end;
 }
@@ -638,10 +625,12 @@ document.addEventListener("DOMContentLoaded", () => {
     display: flex;
     align-items: center;
     gap: 10px;
+    grid-column: span 2;
 }
 
 .price-range input {
     flex: 1;
+    min-width: 100px;
 }
 
 .price-range span {
@@ -777,10 +766,6 @@ document.addEventListener("DOMContentLoaded", () => {
 }
 </style>
 ';
-
-// Include footer
 include 'footer.php';
-
-// Don't forget to close the database connection
 $conn->close();
 ?>

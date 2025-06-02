@@ -89,6 +89,7 @@ include 'header.php';
                 <button class="filter-btn" data-filter="House">Houses</button>
                 <button class="filter-btn" data-filter="Apartment">Apartments</button>
                 <button class="filter-btn" data-filter="Condo">Condos</button>
+                <button class="filter-btn" data-filter="Kos">Kos</button>
             </div>
             <div id="property-list" class="property-list">
                 <div class="loading-properties">
@@ -127,20 +128,6 @@ include 'header.php';
                     <h3>24/7 Support</h3>
                     <p>Our team is always ready to help you find your perfect home.</p>
                 </div>
-            </div>
-        </div>
-    </section>
-
-    <!-- Newsletter Section -->
-    <section class="newsletter">
-        <div class="container">
-            <div class="newsletter-content">
-                <h2>Stay Updated</h2>
-                <p>Get the latest property listings and updates delivered to your inbox.</p>
-                <form class="newsletter-form" onsubmit="subscribeNewsletter(event)">
-                    <input type="email" placeholder="Enter your email" required>
-                    <button type="submit">Subscribe</button>
-                </form>
             </div>
         </div>
     </section>

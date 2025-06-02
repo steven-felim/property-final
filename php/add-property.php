@@ -208,6 +208,8 @@ $conn->close();
                                     <option value="Condo" <?php echo (isset($pType) && $pType === 'Condo') ? 'selected' : ''; ?>>Condo</option>
                                     <option value="Studio" <?php echo (isset($pType) && $pType === 'Studio') ? 'selected' : ''; ?>>Studio</option>
                                     <option value="Townhouse" <?php echo (isset($pType) && $pType === 'Townhouse') ? 'selected' : ''; ?>>Townhouse</option>
+                                    <option value="Villa" <?php echo (isset($pType) && $pType === 'Villa') ? 'selected' : ''; ?>>Villa</option>
+                                    <option value="Kos" <?php echo (isset($pType) && $pType === 'Kos') ? 'selected' : ''; ?>>Kos</option>
                                 </select>
                             </div>
 
