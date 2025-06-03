@@ -24,30 +24,44 @@ if ($result) {
     }
 }
 
-// Fetch all clients and owners for registration
+// Fetch all clients and staff for registration
 $clients = [];
 $owners = [];
 $res = $conn->query("SELECT clientNo, fName, lName FROM cclient");
 while ($row = $res->fetch_assoc())
     $clients[] = $row;
-$res = $conn->query("SELECT ownerNo, fName, lName FROM privateowner");
-while ($row = $res->fetch_assoc())
-    $owners[] = $row;
+$staffNo = $conn->query("SELECT staffNo FROM staff WHERE eMail = '$userEmail'")->fetch_assoc()['staffNo'] ?? '';
 
-// Handle register client to property owner
+// Handle register client to staff
 $registerMsg = '';
 if ($_SERVER['REQUEST_METHOD'] === 'POST' && isset($_POST['register_client'])) {
     $clientNo = $_POST['clientNo'];
-    $ownerNo = $_POST['ownerNo'];    // Assign client to owner's property
-    $sql = "UPDATE registration SET branchNo = (SELECT branchNo FROM propertyforrent WHERE ownerNo = ? LIMIT 1) WHERE clientNo = ?";
-    $stmt = $conn->prepare($sql);
-    $stmt->bind_param("ss", $ownerNo, $clientNo);
-    if ($stmt->execute()) {
-        $registerMsg = "Client successfully registered to property owner.";
+
+    if ($staffNo) {
+        // Get branchNo from staff
+        $stmt = $conn->prepare("SELECT branchNo FROM staff WHERE staffNo = ? LIMIT 1");
+        $stmt->bind_param("s", $staffNo);
+        $stmt->execute();
+        $stmt->bind_result($branchNo);
+        $stmt->fetch();
+        $stmt->close();
+
+        if ($branchNo) {
+            $dateJoined = date('Y-m-d');
+            $stmt = $conn->prepare("INSERT INTO registration (clientNo, branchNo, staffNo, dateJoined) VALUES (?, ?, ?, ?)");
+            $stmt->bind_param("ssss", $clientNo, $branchNo, $staffNo, $dateJoined);
+            if ($stmt->execute()) {
+                $registerMsg = "Client successfully registered.";
+            } else {
+                $registerMsg = "Failed to register client.";
+            }
+            $stmt->close();
+        } else {
+            $registerMsg = "Staff branch not found.";
+        }
     } else {
-        $registerMsg = "Failed to register client.";
+        $registerMsg = "Staff session invalid.";
     }
-    $stmt->close();
 }
 
 // Handle property removal by staff
@@ -248,7 +262,7 @@ include 'header.php';
             </div>
         </section>
 
-        <!-- 2. Register Client to Property Owner -->
+        <!-- 2. Register Client to Staff -->
         <section class="dashboard-section">
             <div class="section-header">
                 <h2>
@@ -276,19 +290,6 @@ include 'header.php';
                                 <?php foreach ($clients as $c): ?>
                                     <option value="<?php echo htmlspecialchars($c['clientNo']); ?>">
                                         <?php echo htmlspecialchars($c['clientNo'] . ' - ' . $c['fName'] . ' ' . $c['lName']); ?>
-                                    </option>
-                                <?php endforeach; ?>
-                            </select>
-                        </div>
-                        <div class="form-field">
-                            <label for="ownerNo">
-                                <i class="fas fa-building"></i> Property Owner
-                            </label>
-                            <select name="ownerNo" id="ownerNo" required>
-                                <option value="">Choose an owner...</option>
-                                <?php foreach ($owners as $o): ?>
-                                    <option value="<?php echo htmlspecialchars($o['ownerNo']); ?>">
-                                        <?php echo htmlspecialchars($o['ownerNo'] . ' - ' . $o['fName'] . ' ' . $o['lName']); ?>
                                     </option>
                                 <?php endforeach; ?>
                             </select>
