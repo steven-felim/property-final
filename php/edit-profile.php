@@ -166,10 +166,13 @@ include 'header.php';
                                 <label for="prefType">Preferred Property Type</label>
                                 <select id="prefType" name="prefType">
                                     <option value="">Select Type</option>
-                                    <option value="House" <?php echo ($user['prefType'] === 'House') ? 'selected' : ''; ?>>House</option>
-                                    <option value="Apartment" <?php echo ($user['prefType'] === 'Apartment') ? 'selected' : ''; ?>>Apartment</option>
-                                    <option value="Condo" <?php echo ($user['prefType'] === 'Condo') ? 'selected' : ''; ?>>Condo</option>
-                                    <option value="Studio" <?php echo ($user['prefType'] === 'Studio') ? 'selected' : ''; ?>>Studio</option>
+                                    <option value="House" <?php echo (isset($pType) && $pType === 'House') ? 'selected' : ''; ?>>House</option>
+                                    <option value="Apartment" <?php echo (isset($pType) && $pType === 'Apartment') ? 'selected' : ''; ?>>Apartment</option>
+                                    <option value="Condo" <?php echo (isset($pType) && $pType === 'Condo') ? 'selected' : ''; ?>>Condo</option>
+                                    <option value="Studio" <?php echo (isset($pType) && $pType === 'Studio') ? 'selected' : ''; ?>>Studio</option>
+                                    <option value="Townhouse" <?php echo (isset($pType) && $pType === 'Townhouse') ? 'selected' : ''; ?>>Townhouse</option>
+                                    <option value="Villa" <?php echo (isset($pType) && $pType === 'Villa') ? 'selected' : ''; ?>>Villa</option>
+                                    <option value="Kos" <?php echo (isset($pType) && $pType === 'Kos') ? 'selected' : ''; ?>>Kos</option>
                                 </select>
                             </div>
                             <div class="form-group">

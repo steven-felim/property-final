@@ -118,7 +118,6 @@
             
             <div class="auth-links">
                 <p>Don't have an account? <a href="register.php">Create one here</a></p>
-                <p><a href="forgot-password.php">Forgot your password?</a></p>
             </div>
         </form>
     </div>
